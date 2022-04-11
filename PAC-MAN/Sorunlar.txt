@@ -1,0 +1,5 @@
+Ekran Titremesi
+Skor yazısı çok altta
+Input geç algılanıyor
+
+
