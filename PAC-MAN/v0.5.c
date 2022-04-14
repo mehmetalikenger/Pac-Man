@@ -3,30 +3,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define H 30
-#define W 65
+#define H 13
+#define W 34
 
 char harita[H][W] =
 {
-   { "##############################" },
-   { "#                            #" },                             
-   { "#    #########   #########   #" },                                               
-   { "#    #########   #########   #" },       
-   { "#    #########   #########   #" }, 
-   { "#    #########   #########   #" },  
-   { "#    #########   #########   #" },
-   { "#                            #" },
-   { "#    #########   #########   #" },         
-   { "#    #########   #########   #" },      
-   { "#    #########   #########   #" },         
-   { "#                            #" },
-   { "#    #########   #########   #" },                                    
-   { "#    #########   #########   #" },                                            
-   { "#    #########   #########   #" },      
-   { "#                            #" },
-   { "#    #########   #########   #" },
-   { "#                            #" },
-   { "##############################" }
+   { "#################################"},
+   { "#                               #" },                             
+   { "# ######### ######### ######### #" },                                               
+   { "# ######### ######### ######### #" },       
+   { "# ######### ######### ######### #" }, 
+   { "# ######### ######### ######### #" },  
+   { "#                               #" },
+   { "# ######### ######### ######### #" },         
+   { "# ######### ######### ######### #" },      
+   { "# ######### ######### ######### #" },         
+   { "# ######### ######### ######### #" },
+   { "#                               #" },
+   { "#################################" },
 };
 
 struct PacManBilgi{
@@ -75,10 +69,12 @@ int canavar() {
 		
 	harita[Canavar.konumY][Canavar.konumX] =' ';	
 	
-	if(Canavar.hareketX == 0 && Canavar.hareketY == 0) {
+	if((Canavar.hareketX == 0 && Canavar.hareketY == 0) || 
+	  ((Canavar.hareketY == 1 || Canavar.hareketY == -1) && (harita[Canavar.konumY][Canavar.konumX+1] != '#' || harita[Canavar.konumY][Canavar.konumX-1] != '#' )) || 
+	  ((Canavar.hareketX == 1 || Canavar.hareketX == -1) && (harita[Canavar.konumY+1][Canavar.konumX] != '#' || harita[Canavar.konumY-1][Canavar.konumX] != '#' ))) 
+	  {
 	
 		Canavar.yon = 1 + rand() % 5;    
-	
 	}
 		
 	switch(Canavar.yon) {
@@ -108,7 +104,7 @@ int canavar() {
 		int kontrolX = Canavar.konumX + Canavar.hareketX;
 		int kontrolY = Canavar.konumY + Canavar.hareketY; 
 					
-		if((harita[kontrolY][kontrolX] == '#') || (harita[kontrolY][kontrolX] == '+') ) {
+		if((harita[kontrolY][kontrolX] == '#') || (harita[kontrolY][kontrolX] == '+')) {
 	
 			Canavar.hareketX = 0;
 			Canavar.hareketY = 0;		
@@ -145,7 +141,7 @@ int pacMan() {
 
 	} 
 	
-	if(harita[kontrolY][kontrolX] == '&') {
+	if(harita[kontrolY][kontrolX] == '&' /*|| harita[kontrolY][kontrolX] == '#'*/) {
 		
 		return 0;				
 	}
@@ -219,21 +215,21 @@ main() {
 
 	int x, y;
 
-	PacMan.konumX = 15;
-	PacMan.konumY = 17;
+	PacMan.konumX = 16;
+	PacMan.konumY = 11;
 	PacMan.hareketX = 0;
 	PacMan.hareketY = 0;
 	PacMan.skor = 0;
 	
-	Canavar.konumX = 10;
-	Canavar.konumY = 15;
+	Canavar.konumX = 1;
+	Canavar.konumY = 1;
 	Canavar.hareketX = 0;
 	Canavar.hareketY = 0;
 	Canavar.yon = 0;
 
 	while(1) {
 
-		usleep(400000);
+		usleep(300000);
 		haritaOlustur();
 		y = canavar();
 		x = pacMan();
