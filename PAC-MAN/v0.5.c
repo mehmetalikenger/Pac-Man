@@ -3,53 +3,52 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define H 13
-#define W 34
+#define H 19
+#define W 39
 
 char harita[H][W] =
 {
-   { "#################################"},
-   { "#                               #" },                             
-   { "# ######### ######### ######### #" },                                               
-   { "# ######### ######### ######### #" },       
-   { "# ######### ######### ######### #" }, 
-   { "# ######### ######### ######### #" },  
-   { "#                               #" },
-   { "# ######### ######### ######### #" },         
-   { "# ######### ######### ######### #" },      
-   { "# ######### ######### ######### #" },         
-   { "# ######### ######### ######### #" },
-   { "#                               #" },
-   { "#################################" },
+   { "######################################" },
+   { "#                                    #" },                             
+   { "# ########### ########### ########## #" },                                               
+   { "# #         # #         # #          #" },       
+   { "# # ####### # # ####### # # ######## #" },  
+   { "# #         # # ####### # # ######## #" }, 
+   { "# # ######### #         # # ######## #" }, 
+   { "# # ######### # ####### # #          #" }, 
+   { "# # ######### # ####### # ########## #" }, 
+   { "#                                    #" },
+   { "# ############# ########## ######### #" },        
+   { "# #           # #        # #    ##   #" },      
+   { "# # ### # ### # # ###### # # ## ## # #" },         
+   { "# # ### # ### # # ###### # # ## ## # #" },
+   { "# # ### # ### # #        # # ## ## # #" },                                    
+   { "# # ### # ### # # ###### # # ## ## # #" },
+   { "# # ### # ### # # ###### # # ## ## # #" },
+   { "#                                    #" },
+   { "######################################" }
 };
 
-struct PacManBilgi{
+struct konumBilgi{
 
 	int konumX;
 	int konumY;
 	int hareketX;
 	int hareketY;
 	char yon;
-	int skor;
-
-} PacMan;
-
-struct canavarBilgi{
 	
-	int konumX;
-	int konumY;
-	int hareketX;
-	int hareketY;
-	int yon;
-	
-}Canavar;
+} PacMan, Canavar;
 
+int skor;
 int yem = 0;
+
+int rand_temp = 0;
 
 void haritaOlustur() {
 
 	int i,j;
 
+	usleep(200000);
 	system("cls");
 		
 	for(i = 0; i < H; i++) {
@@ -62,7 +61,7 @@ void haritaOlustur() {
 		printf("\n");
 	}	
 	
-	printf("Skor: %d\n", PacMan.skor);
+	printf("Skor: %d\n", skor);
 }
 
 int canavar() {
@@ -74,9 +73,19 @@ int canavar() {
 	  ((Canavar.hareketX == 1 || Canavar.hareketX == -1) && (harita[Canavar.konumY+1][Canavar.konumX] != '#' || harita[Canavar.konumY-1][Canavar.konumX] != '#' ))) 
 	  {
 	
-		Canavar.yon = 1 + rand() % 5;    
-	}
+	while(1) {
+	
+		Canavar.yon = 1 + rand() % 5;   
 		
+		if((Canavar.yon == 1 && rand_temp != 2) || (Canavar.yon == 2 && rand_temp != 1) || (Canavar.yon == 3 && rand_temp != 4) || (Canavar.yon == 4 && rand_temp != 3)) {
+		
+		rand_temp = Canavar.yon;
+		break;	
+	}
+}
+	
+}
+
 	switch(Canavar.yon) {
 		
 		case 1:
@@ -154,7 +163,7 @@ int pacMan() {
 	
 	if(harita[PacMan.konumY][PacMan.konumX] == '+') {
 		
-		PacMan.skor++;
+		skor++;
 		yem = 0;
 				
 	}
@@ -215,11 +224,11 @@ main() {
 
 	int x, y;
 
-	PacMan.konumX = 16;
-	PacMan.konumY = 11;
+	PacMan.konumX = 19;
+	PacMan.konumY = 17;
 	PacMan.hareketX = 0;
 	PacMan.hareketY = 0;
-	PacMan.skor = 0;
+	skor = 0;
 	
 	Canavar.konumX = 1;
 	Canavar.konumY = 1;
@@ -229,7 +238,6 @@ main() {
 
 	while(1) {
 
-		usleep(300000);
 		haritaOlustur();
 		y = canavar();
 		x = pacMan();
