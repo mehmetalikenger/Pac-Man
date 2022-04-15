@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <time.h>
 #define H 19
 #define W 39
 
@@ -29,26 +29,38 @@ char harita[H][W] =
    { "######################################" }
 };
 
-struct konumBilgi{
-
+struct Bilgi{
+	
 	int konumX;
 	int konumY;
 	int hareketX;
 	int hareketY;
-	char yon;
+	int yon;	
+}Canavar, PacMan;
+		
+	int skor=0;
+	int yem = 0;
+	int yon_temp = 1;
 	
-} PacMan, Canavar;
+//FONKSÝYONLAR
 
-int skor;
-int yem = 0;
+//RANDOM SAYI ÜRETÝCÝ
+int randnum(int min, int max)
+	{		
+		int dizi[2] = {min,max}, i;
+			
+		i = rand() % 2;
+			
+		return dizi[i];
+	}
 
-int rand_temp = 0;
-
-void haritaOlustur() {
-
+//HARÝTA OLUÞTURMA FONKSÝYONU	
+	void haritaOlustur() {
+	
+	usleep(200000);
+	
 	int i,j;
 
-	usleep(200000);
 	system("cls");
 		
 	for(i = 0; i < H; i++) {
@@ -64,29 +76,73 @@ void haritaOlustur() {
 	printf("Skor: %d\n", skor);
 }
 
-int canavar() {
+//CANAVAR FONKSÝYONU
+int  canavar() {	
+	
+		int n,m;
 		
-	harita[Canavar.konumY][Canavar.konumX] =' ';	
-	
-	if((Canavar.hareketX == 0 && Canavar.hareketY == 0) || 
-	  ((Canavar.hareketY == 1 || Canavar.hareketY == -1) && (harita[Canavar.konumY][Canavar.konumX+1] != '#' || harita[Canavar.konumY][Canavar.konumX-1] != '#' )) || 
-	  ((Canavar.hareketX == 1 || Canavar.hareketX == -1) && (harita[Canavar.konumY+1][Canavar.konumX] != '#' || harita[Canavar.konumY-1][Canavar.konumX] != '#' ))) 
-	  {
-	
-	while(1) {
-	
-		Canavar.yon = 1 + rand() % 5;   
+		int kontrolY = Canavar.konumY; 
+		int kontrolX = Canavar.konumX;
 		
-		if((Canavar.yon == 1 && rand_temp != 2) || (Canavar.yon == 2 && rand_temp != 1) || (Canavar.yon == 3 && rand_temp != 4) || (Canavar.yon == 4 && rand_temp != 3)) {
+		if((yon_temp == 1) && ((harita[kontrolY][kontrolX-1] != '#') && (harita[kontrolY][kontrolX-1] != '+') ) ){
+				
+			n = 1;
+			m = 3;		
+			Canavar.yon = randnum(n, m);
+		}			
 		
-		rand_temp = Canavar.yon;
-		break;	
-	}
-}
-	
-}
-
-	switch(Canavar.yon) {
+		if((yon_temp == 1) && ((harita[kontrolY][kontrolX+1] != '#') && (harita[kontrolY][kontrolX+1] != '+') ) ){
+				
+			n = 1;
+			m = 4;		
+			Canavar.yon = randnum(n, m);
+		}
+		
+		if((yon_temp == 2) && ((harita[kontrolY][kontrolX-1] != '#') && (harita[kontrolY][kontrolX-1] != '+') ) ){
+			
+			n = 2;
+			m = 3;		
+			Canavar.yon = randnum(n, m);
+		}
+		
+		if((yon_temp == 2) && ((harita[kontrolY][kontrolX+1] != '#') && (harita[kontrolY][kontrolX+1] != '+') ) ){
+			
+			n = 2;
+			m = 4;		
+			Canavar.yon = randnum(n, m);
+		}
+				
+		if((yon_temp == 3) && ((harita[kontrolY-1][kontrolX] != '#') && (harita[kontrolY-1][kontrolX] != '+') ) ){
+			
+			n = 1;
+			m = 3;	
+			Canavar.yon = randnum(n, m);
+		}
+				
+		if((yon_temp == 3) && ((harita[kontrolY+1][kontrolX] != '#') && (harita[kontrolY+1][kontrolX] != '+') ) ){
+			
+			n = 2;
+			m = 3;		
+			Canavar.yon = randnum(n, m);
+		}
+			
+		if((yon_temp == 4) && ((harita[kontrolY-1][kontrolX] != '#') && (harita[kontrolY-1][kontrolX] != '+') ) ){
+			
+			n = 1;
+			m = 4;		
+			Canavar.yon = randnum(n, m);
+		}
+				
+		if((yon_temp == 4) && ((harita[kontrolY+1][kontrolX] != '#') && (harita[kontrolY+1][kontrolX] != '+') ) ){
+			
+			n = 2;
+			m = 4;		
+			Canavar.yon = randnum(n, m);
+		}
+					
+		yon_temp = Canavar.yon;	
+		
+		switch(Canavar.yon) {
 		
 		case 1:
 			Canavar.hareketX = 0;
@@ -99,44 +155,43 @@ int canavar() {
 			break;
 		
 		case 3:
-			Canavar.hareketX = 1;
+			Canavar.hareketX = -1;
 			Canavar.hareketY = 0;
 			break;
 			
 		case 4:
-			Canavar.hareketX = -1;         
+			Canavar.hareketX = 1;         
 			Canavar.hareketY = 0;
-			break;				
-			
+			break;							
 		}
-					
-		int kontrolX = Canavar.konumX + Canavar.hareketX;
-		int kontrolY = Canavar.konumY + Canavar.hareketY; 
-					
+		
+		kontrolX = Canavar.konumX + Canavar.hareketX;
+		kontrolY = Canavar.konumY + Canavar.hareketY;
+				
 		if((harita[kontrolY][kontrolX] == '#') || (harita[kontrolY][kontrolX] == '+')) {
 	
 			Canavar.hareketX = 0;
-			Canavar.hareketY = 0;		
-		}	
+			Canavar.hareketY = 0;
+			Canavar.yon = 0;		
+		}
 		
 		if(harita[kontrolY][kontrolX] == '@') {
 		
 		return 0;		
 				
 		} else {
-		
 				
+    	harita[Canavar.konumY][Canavar.konumX] =' ';		
+		
 		Canavar.konumX += Canavar.hareketX;
 		Canavar.konumY += Canavar.hareketY;
 		
-	}
-				
-		harita[Canavar.konumY][Canavar.konumX] ='&';	
+		harita[Canavar.konumY][Canavar.konumX] ='&';			
+	}	
 }
 
+//PAC-MAN FONKSÝYONU
 int pacMan() {
-
-	harita[PacMan.konumY][PacMan.konumX] = ' ';
 
 	int kontrolX, kontrolY;
 
@@ -147,31 +202,31 @@ int pacMan() {
 
 		PacMan.hareketX = 0;
 		PacMan.hareketY = 0;	
-
 	} 
 	
-	if(harita[kontrolY][kontrolX] == '&' /*|| harita[kontrolY][kontrolX] == '#'*/) {
+	if(harita[kontrolY][kontrolX] == '&') {
 		
 		return 0;				
 	}
 	
 	else {
-
+		
+		harita[PacMan.konumY][PacMan.konumX] = ' ';
+		
 		PacMan.konumX += PacMan.hareketX;
-		PacMan.konumY += PacMan.hareketY;						
-	}
-	
-	if(harita[PacMan.konumY][PacMan.konumX] == '+') {
+		PacMan.konumY += PacMan.hareketY;
+		
+		if(harita[PacMan.konumY][PacMan.konumX] == '+') {
 		
 		skor++;
-		yem = 0;
-				
-	}
-	
-	harita[PacMan.konumY][PacMan.konumX] = '@';
-
+		yem = 0;				
+		}
+							
+		harita[PacMan.konumY][PacMan.konumX] = '@';						
+	}	
 }
 
+//PAC-MAN HAREKET INPUT FONKSÝYONU
 void PacMan_hareket() {
 
 	if(kbhit()){
@@ -179,59 +234,40 @@ void PacMan_hareket() {
 		switch(getch()) {
 
 			case 'w':
-				PacMan.yon = 'w';
+				PacMan.hareketX = 0;
+				PacMan.hareketY = -1;
 		  		break;
 
 		  	case 's':
-				PacMan.yon = 's';
+				PacMan.hareketX = 0;
+				PacMan.hareketY = +1;
 		  		break;
 
 		  	case 'a':
-				PacMan.yon = 'a';
+				PacMan.hareketX = -1;
+				PacMan.hareketY = 0;
 		  		break;
 
 		  	case 'd':
-				PacMan.yon= 'd';
-		  		break;				
-		}
-	}
-
-		switch(PacMan.yon) {
-
-			case 'w':
-				PacMan.hareketX = 0;
-				PacMan.hareketY = -1;
-				break;
-
-			case 's':
-				PacMan.hareketX = 0;
-				PacMan.hareketY = +1;
-				break;
-
-			case 'a':
-				PacMan.hareketX = -1;
-				PacMan.hareketY = 0;
-				break;
-
-			case 'd':
 				PacMan.hareketX = +1;
 				PacMan.hareketY = 0;
-				break;		
-		}			
+		  		break;				
+		}
+	}		
 }		
 
-main() {
+//MAIN FONKSÝYONU
+int main() {
 
 	int x, y;
-
-	PacMan.konumX = 19;
+	
+	PacMan.konumX = 15;
 	PacMan.konumY = 17;
 	PacMan.hareketX = 0;
 	PacMan.hareketY = 0;
-	skor = 0;
 	
-	Canavar.konumX = 1;
-	Canavar.konumY = 1;
+	Canavar.konumX = 10;
+	Canavar.konumY = 11;
 	Canavar.hareketX = 0;
 	Canavar.hareketY = 0;
 	Canavar.yon = 0;
@@ -245,8 +281,7 @@ main() {
 		
 		if(x == 0 || y == 0) {
 			
-			return 0;
-			
+			return 0;		
 		}
 	}
 }
