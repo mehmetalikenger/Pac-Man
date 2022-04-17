@@ -78,6 +78,7 @@ void haritaOlustur() {
 	printf("Skor: %d\n", Oyuncu.skor);
 }
 
+
 bool CanavarYonKontrol(int x, int y) {
 	
 	if(harita[y][x] != '#' && harita[y][x] != '+'){
@@ -98,16 +99,6 @@ int mesafeHesap(int koorX, int koorY, int yon) {
 	
 	mesafeX = koorX - PacMan.pacMan.konumX;
 	mesafeY = koorY - PacMan.pacMan.konumY;
-	
-	if(mesafeX < 0) {
-		
-		mesafeX *= -1;		
-	}
-	
-	if(mesafeY < 0) {
-		
-		mesafeY *= -1;;	
-	}
 	
 	toplamMesafe = sqrt(mesafeX * mesafeX + mesafeY * mesafeY);
 	
@@ -331,4 +322,6 @@ int main() {
 			return 0;		
 		}
 	}
+	
+	return 0;
 }
