@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <conio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
+#include <windows.h>
+#include <stdbool.h>
+#include <math.h>
 #define H 19
 #define W 39
 
@@ -29,39 +28,42 @@ char harita[H][W] =
    { "######################################" }
 };
 
-struct Bilgi{
+enum yon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
+
+typedef struct Hareket{
 	
 	int konumX;
 	int konumY;
 	int hareketX;
 	int hareketY;
 	int yon;	
-}Canavar, PacMan;
-		
-	int skor=0;
-	int yem = 0;
-	int yon_temp = 1;
+} hareket;
+
+struct CanavarBilgi{
 	
-//FONKSÝYONLAR
+	double enKisaMesafe;
+	hareket canavar;
+}Canavar;
 
-//RANDOM SAYI ÜRETÝCÝ
-int randnum(int min, int max)
-	{		
-		int dizi[2] = {min,max}, i;
-			
-		i = rand() % 2;
-			
-		return dizi[i];
-	}
+struct PacManBilgi{
+	
+	hareket pacMan;	
+}PacMan;
 
-//HARÝTA OLUÞTURMA FONKSÝYONU	
-	void haritaOlustur() {
+struct OyuncuBilgi {
+	
+	char isim[20];
+	int skor;	
+}Oyuncu;
+	
+int yem = 0;
+
+	
+void haritaOlustur() {
 	
 	usleep(200000);
 	
 	int i,j;
-
-	system("cls");
 		
 	for(i = 0; i < H; i++) {
 
@@ -73,135 +75,138 @@ int randnum(int min, int max)
 		printf("\n");
 	}	
 	
-	printf("Skor: %d\n", skor);
+	printf("Skor: %d\n", Oyuncu.skor);
 }
 
-//CANAVAR FONKSÝYONU
-int  canavar() {	
+bool CanavarYonKontrol(int x, int y) {
 	
-		int n,m;
+	if(harita[y][x] != '#' && harita[y][x] != '+'){
 		
-		int kontrolY = Canavar.konumY; 
-		int kontrolX = Canavar.konumX;
+		return true;		
+	
+	} else {
 		
-		if((yon_temp == 1) && ((harita[kontrolY][kontrolX-1] != '#') && (harita[kontrolY][kontrolX-1] != '+') ) ){
-				
-			n = 1;
-			m = 3;		
-			Canavar.yon = randnum(n, m);
-		}			
+		return false;		
+	}	
+}
+
+
+int mesafeHesap(int koorX, int koorY, int yon) {
+	
+	int mesafeX, mesafeY; 
+	double toplamMesafe;
+	
+	mesafeX = koorX - PacMan.pacMan.konumX;
+	mesafeY = koorY - PacMan.pacMan.konumY;
+	
+	if(mesafeX < 0) {
 		
-		if((yon_temp == 1) && ((harita[kontrolY][kontrolX+1] != '#') && (harita[kontrolY][kontrolX+1] != '+') ) ){
-				
-			n = 1;
-			m = 4;		
-			Canavar.yon = randnum(n, m);
-		}
+		mesafeX *= -1;		
+	}
+	
+	if(mesafeY < 0) {
 		
-		if((yon_temp == 2) && ((harita[kontrolY][kontrolX-1] != '#') && (harita[kontrolY][kontrolX-1] != '+') ) ){
-			
-			n = 2;
-			m = 3;		
-			Canavar.yon = randnum(n, m);
-		}
+		mesafeY *= -1;;	
+	}
+	
+	toplamMesafe = sqrt(mesafeX * mesafeX + mesafeY * mesafeY);
+	
+	if(toplamMesafe < Canavar.enKisaMesafe) {
 		
-		if((yon_temp == 2) && ((harita[kontrolY][kontrolX+1] != '#') && (harita[kontrolY][kontrolX+1] != '+') ) ){
-			
-			n = 2;
-			m = 4;		
-			Canavar.yon = randnum(n, m);
-		}
-				
-		if((yon_temp == 3) && ((harita[kontrolY-1][kontrolX] != '#') && (harita[kontrolY-1][kontrolX] != '+') ) ){
-			
-			n = 1;
-			m = 3;	
-			Canavar.yon = randnum(n, m);
-		}
-				
-		if((yon_temp == 3) && ((harita[kontrolY+1][kontrolX] != '#') && (harita[kontrolY+1][kontrolX] != '+') ) ){
-			
-			n = 2;
-			m = 3;		
-			Canavar.yon = randnum(n, m);
-		}
-			
-		if((yon_temp == 4) && ((harita[kontrolY-1][kontrolX] != '#') && (harita[kontrolY-1][kontrolX] != '+') ) ){
-			
-			n = 1;
-			m = 4;		
-			Canavar.yon = randnum(n, m);
-		}
-				
-		if((yon_temp == 4) && ((harita[kontrolY+1][kontrolX] != '#') && (harita[kontrolY+1][kontrolX] != '+') ) ){
-			
-			n = 2;
-			m = 4;		
-			Canavar.yon = randnum(n, m);
-		}
-					
-		yon_temp = Canavar.yon;	
+		Canavar.enKisaMesafe = toplamMesafe;	
+		Canavar.canavar.yon = yon;
+	
+	} else if(toplamMesafe == Canavar.enKisaMesafe){
 		
-		switch(Canavar.yon) {
+		return 0;
+	}
+}
+
+
+int canavar() {		
+	
+	int kontrolX, kontrolY;
+	
+	if(CanavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
 		
-		case 1:
-			Canavar.hareketX = 0;
-			Canavar.hareketY = -1;
+		mesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
+	}
+	
+	if(CanavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
+		
+		mesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
+	}
+	
+	if(CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
+		
+		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
+	}
+	
+	if(CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
+		
+		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
+	}	
+	
+	switch(Canavar.canavar.yon) {
+		
+		case UP:
+			Canavar.canavar.hareketX = 0;
+			Canavar.canavar.hareketY = -1;
 			break;
 			
-		case 2:
-			Canavar.hareketX = 0;
-			Canavar.hareketY = 1;
+		case DOWN:
+			Canavar.canavar.hareketX = 0;
+			Canavar.canavar.hareketY = 1;
 			break;
 		
-		case 3:
-			Canavar.hareketX = -1;
-			Canavar.hareketY = 0;
+		case LEFT:
+			Canavar.canavar.hareketX = -1;
+			Canavar.canavar.hareketY = 0;
 			break;
 			
-		case 4:
-			Canavar.hareketX = 1;         
-			Canavar.hareketY = 0;
+		case RIGHT:
+			Canavar.canavar.hareketX = 1;         
+			Canavar.canavar.hareketY = 0;
 			break;							
 		}
 		
-		kontrolX = Canavar.konumX + Canavar.hareketX;
-		kontrolY = Canavar.konumY + Canavar.hareketY;
+		kontrolX = Canavar.canavar.konumX + Canavar.canavar.hareketX;
+		kontrolY = Canavar.canavar.konumY + Canavar.canavar.hareketY;
 				
-		if((harita[kontrolY][kontrolX] == '#') || (harita[kontrolY][kontrolX] == '+')) {
+		if(!CanavarYonKontrol(kontrolX, kontrolY)) {
 	
-			Canavar.hareketX = 0;
-			Canavar.hareketY = 0;
-			Canavar.yon = 0;		
+			Canavar.canavar.hareketX = 0;
+			Canavar.canavar.hareketY = 0;
+			Canavar.canavar.yon = 0;		
 		}
 		
 		if(harita[kontrolY][kontrolX] == '@') {
 		
-		return 0;		
+			return 0;		
 				
 		} else {
 				
-    	harita[Canavar.konumY][Canavar.konumX] =' ';		
+    	harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
 		
-		Canavar.konumX += Canavar.hareketX;
-		Canavar.konumY += Canavar.hareketY;
+		Canavar.canavar.konumX += Canavar.canavar.hareketX;
+		Canavar.canavar.konumY += Canavar.canavar.hareketY;
 		
-		harita[Canavar.konumY][Canavar.konumX] ='&';			
-	}	
+		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] ='&';	
+		}
 }
 
-//PAC-MAN FONKSÝYONU
+
 int pacMan() {
 
 	int kontrolX, kontrolY;
 
-	kontrolX = PacMan.konumX + PacMan.hareketX;
-	kontrolY = PacMan.konumY + PacMan.hareketY;
+	kontrolX = PacMan.pacMan.konumX + PacMan.pacMan.hareketX;
+	kontrolY = PacMan.pacMan.konumY + PacMan.pacMan.hareketY;
 
 	if(harita[kontrolY][kontrolX] == '#') {
 
-		PacMan.hareketX = 0;
-		PacMan.hareketY = 0;	
+		PacMan.pacMan.hareketX = 0;
+		PacMan.pacMan.hareketY = 0;	
 	} 
 	
 	if(harita[kontrolY][kontrolX] == '&') {
@@ -211,22 +216,22 @@ int pacMan() {
 	
 	else {
 		
-		harita[PacMan.konumY][PacMan.konumX] = ' ';
+		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = ' ';
 		
-		PacMan.konumX += PacMan.hareketX;
-		PacMan.konumY += PacMan.hareketY;
+		PacMan.pacMan.konumX += PacMan.pacMan.hareketX;
+		PacMan.pacMan.konumY += PacMan.pacMan.hareketY;
 		
-		if(harita[PacMan.konumY][PacMan.konumX] == '+') {
+		if(harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] == '+') {
 		
-		skor++;
-		yem = 0;				
+			Oyuncu.skor++;
+			yem = 0;				
 		}
 							
-		harita[PacMan.konumY][PacMan.konumX] = '@';						
+		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = '@';						
 	}	
 }
 
-//PAC-MAN HAREKET INPUT FONKSÝYONU
+
 void PacMan_hareket() {
 
 	if(kbhit()){
@@ -234,51 +239,92 @@ void PacMan_hareket() {
 		switch(getch()) {
 
 			case 'w':
-				PacMan.hareketX = 0;
-				PacMan.hareketY = -1;
+				PacMan.pacMan.hareketX = 0;
+				PacMan.pacMan.hareketY = -1;
+		  		break;
+		  		
+		  	case 'W':
+				PacMan.pacMan.hareketX = 0;
+				PacMan.pacMan.hareketY = -1;
 		  		break;
 
 		  	case 's':
-				PacMan.hareketX = 0;
-				PacMan.hareketY = +1;
+				PacMan.pacMan.hareketX = 0;
+				PacMan.pacMan.hareketY = +1;
+		  		break;
+		  		
+		  	case 'S':
+				PacMan.pacMan.hareketX = 0;
+				PacMan.pacMan.hareketY = -1;
 		  		break;
 
 		  	case 'a':
-				PacMan.hareketX = -1;
-				PacMan.hareketY = 0;
+				PacMan.pacMan.hareketX = -1;
+				PacMan.pacMan.hareketY = 0;
+		  		break;
+		  		
+		  	case 'A':
+				PacMan.pacMan.hareketX = -1;
+				PacMan.pacMan.hareketY = 0;
 		  		break;
 
 		  	case 'd':
-				PacMan.hareketX = +1;
-				PacMan.hareketY = 0;
-		  		break;				
+				PacMan.pacMan.hareketX = +1;
+				PacMan.pacMan.hareketY = 0;
+		  		break;	
+		  		
+		  	case 'D':
+				PacMan.pacMan.hareketX = +1;
+				PacMan.pacMan.hareketY = 0;
+		  		break;		  			
 		}
 	}		
-}		
-
-//MAIN FONKSÝYONU
-int main() {
-
-	int x, y;
+}	
 	
-	PacMan.konumX = 15;
-	PacMan.konumY = 17;
-	PacMan.hareketX = 0;
-	PacMan.hareketY = 0;
-	
-	Canavar.konumX = 10;
-	Canavar.konumY = 11;
-	Canavar.hareketX = 0;
-	Canavar.hareketY = 0;
-	Canavar.yon = 0;
 
-	while(1) {
+void set_cursor_position(int x, int y)
+{
+   COORD coord = { x, y };
+   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+} 
 
-		haritaOlustur();
-		y = canavar();
-		x = pacMan();
-		PacMan_hareket();
+
+void hidecursor()
+{
+   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+   CONSOLE_CURSOR_INFO info;
+   info.dwSize = 100;
+   info.bVisible = FALSE;
+   SetConsoleCursorInfo(consoleHandle, &info);
+}
+
+
+int main() {	
 		
+	int x, y; 
+	Oyuncu.skor = 0;
+			
+	PacMan.pacMan.konumX = 15;
+	PacMan.pacMan.konumY = 17;
+	PacMan.pacMan.hareketX = 0;
+	PacMan.pacMan.hareketY = 0;
+	
+	Canavar.canavar.konumX = 1;
+	Canavar.canavar.konumY = 1;
+	Canavar.enKisaMesafe = 100;
+	
+	system("cls");	
+	
+	while(1) {
+		
+		set_cursor_position(0,0);
+		hidecursor();
+		
+		haritaOlustur();		
+		y = canavar();
+		PacMan_hareket();
+		x = pacMan();	
+			
 		if(x == 0 || y == 0) {
 			
 			return 0;		
