@@ -147,6 +147,8 @@ int canavar() {
 		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
 	}	
 	
+	Canavar.enKisaMesafe = 100;
+	
 	switch(Canavar.canavar.yon) {
 		
 		case UP:
@@ -186,12 +188,12 @@ int canavar() {
 				
 		} else {
 				
-    	harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+    		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+			
+			Canavar.canavar.konumX += Canavar.canavar.hareketX;
+			Canavar.canavar.konumY += Canavar.canavar.hareketY;
 		
-		Canavar.canavar.konumX += Canavar.canavar.hareketX;
-		Canavar.canavar.konumY += Canavar.canavar.hareketY;
-		
-		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] ='&';	
+			harita[Canavar.canavar.konumY][Canavar.canavar.konumX] ='&';	
 		}
 }
 
@@ -311,7 +313,6 @@ int main() {
 	
 	Canavar.canavar.konumX = 1;
 	Canavar.canavar.konumY = 1;
-	Canavar.enKisaMesafe = 100;
 	
 	system("cls");	
 	
