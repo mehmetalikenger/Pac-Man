@@ -198,7 +198,7 @@ int canavar() {
 				
 		} else {
 				
-    		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+    			harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
 			
 			Canavar.canavar.konumX += Canavar.canavar.hareketX;
 			Canavar.canavar.konumY += Canavar.canavar.hareketY;
