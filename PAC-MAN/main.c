@@ -41,6 +41,7 @@ typedef struct Hareket{
 
 struct CanavarBilgi{
 	
+	int tempYon;
 	double enKisaMesafe;
 	hareket canavar;
 }Canavar;
@@ -57,11 +58,10 @@ struct OyuncuBilgi {
 }Oyuncu;
 	
 int yem = 0;
-
 	
 void haritaOlustur() {
 	
-	usleep(200000);
+	usleep(100000);
 	
 	int i,j;
 		
@@ -105,7 +105,7 @@ int mesafeHesap(int koorX, int koorY, int yon) {
 	if(toplamMesafe < Canavar.enKisaMesafe) {
 		
 		Canavar.enKisaMesafe = toplamMesafe;	
-		Canavar.canavar.yon = yon;
+		Canavar.tempYon = yon;
 	
 	} else if(toplamMesafe == Canavar.enKisaMesafe){
 		
@@ -118,25 +118,27 @@ int canavar() {
 	
 	int kontrolX, kontrolY;
 	
-	if(CanavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != LEFT && CanavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
 		
 		mesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
 	}
 	
-	if(CanavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != RIGHT && CanavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
 		
 		mesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
 	}
 	
-	if(CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
+	if(Canavar.canavar.yon != UP && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
 		
 		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
 	}
 	
-	if(CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
+	if(Canavar.canavar.yon != DOWN && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
 		
 		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
 	}	
+	
+	Canavar.canavar.yon = Canavar.tempYon;
 	
 	Canavar.enKisaMesafe = 100;
 	
@@ -178,7 +180,7 @@ int canavar() {
 				
 		} else {
 				
-    			harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+    		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
 			
 			Canavar.canavar.konumX += Canavar.canavar.hareketX;
 			Canavar.canavar.konumY += Canavar.canavar.hareketY;
