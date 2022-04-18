@@ -94,6 +94,26 @@ bool CanavarYonKontrol(int x, int y) {
 
 int mesafeHesap(int koorX, int koorY, int yon) {
 	
+	if(Canavar.canavar.yon == RIGHT && yon == LEFT) {
+		
+		return 0;		
+	}
+	
+	if(Canavar.canavar.yon == LEFT && yon == RIGHT) {
+		
+		return 0;		
+	}
+	
+	if(Canavar.canavar.yon == DOWN && yon == UP) {
+		
+		return 0;		
+	}
+	
+	if(Canavar.canavar.yon == UP && yon == DOWN) {
+		
+		return 0;		
+	}
+	
 	int mesafeX, mesafeY; 
 	double toplamMesafe;
 	
@@ -169,8 +189,7 @@ int canavar() {
 		if(!CanavarYonKontrol(kontrolX, kontrolY)) {
 	
 			Canavar.canavar.hareketX = 0;
-			Canavar.canavar.hareketY = 0;
-			Canavar.canavar.yon = 0;		
+			Canavar.canavar.hareketY = 0;	
 		}
 		
 		if(harita[kontrolY][kontrolX] == '@') {
