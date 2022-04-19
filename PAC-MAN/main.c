@@ -5,6 +5,7 @@
 #define H 19
 #define W 39
 	
+
 void haritaOlustur();
 bool CanavarYonKontrol(int x, int y);
 int CanavarMesafeHesap(int koorX, int koorY, int yon);
