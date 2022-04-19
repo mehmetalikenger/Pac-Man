@@ -4,6 +4,32 @@
 #include <math.h>
 #define H 19
 #define W 39
+	
+void haritaOlustur();
+bool CanavarYonKontrol(int x, int y);
+int CanavarMesafeHesap(int koorX, int koorY, int yon);
+void CanavarYonBelirle();		
+int CanavarHareketEt();
+void pacManHareketInput();
+int pacManHareketEt();
+
+
+void set_cursor_position(int x, int y)
+{
+   COORD coord = { x, y };
+   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+} 
+
+
+void hidecursor()
+{
+   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+   CONSOLE_CURSOR_INFO info;
+   info.dwSize = 100;
+   info.bVisible = FALSE;
+   SetConsoleCursorInfo(consoleHandle, &info);
+}
+
 
 char harita[H][W] =
 {
@@ -28,7 +54,9 @@ char harita[H][W] =
    { "######################################" }
 };
 
-enum yon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
+
+enum CanavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
+
 
 typedef struct Hareket{
 	
@@ -39,6 +67,7 @@ typedef struct Hareket{
 	int yon;	
 } hareket;
 
+
 struct CanavarBilgi{
 	
 	int tempYon;
@@ -46,18 +75,56 @@ struct CanavarBilgi{
 	hareket canavar;
 }Canavar;
 
+
 struct PacManBilgi{
 	
 	hareket pacMan;	
 }PacMan;
+
 
 struct OyuncuBilgi {
 	
 	char isim[20];
 	int skor;	
 }Oyuncu;
+
 	
 int yem = 0;
+
+
+int main() {	
+		
+	int x, y; 
+	Oyuncu.skor = 0;
+			
+	PacMan.pacMan.konumX = 15;
+	PacMan.pacMan.konumY = 17;
+	PacMan.pacMan.hareketX = 0;
+	PacMan.pacMan.hareketY = 0;
+	
+	Canavar.canavar.konumX = 1;
+	Canavar.canavar.konumY = 1;
+	
+	system("cls");	
+	
+	while(1) {
+		
+		set_cursor_position(0,0);
+		hidecursor();
+		
+		haritaOlustur();		
+		y = CanavarHareketEt();
+		CanavarYonBelirle();
+		pacManHareketInput();
+		x = pacManHareketEt();	
+			
+		if(x == 0 || y == 0) {
+			
+			return 0;		
+		}
+	}
+}
+
 	
 void haritaOlustur() {
 	
@@ -92,7 +159,7 @@ bool CanavarYonKontrol(int x, int y) {
 }
 
 
-int mesafeHesap(int koorX, int koorY, int yon) {
+int CanavarMesafeHesap(int koorX, int koorY, int yon) {
 	
 	int mesafeX, mesafeY; 
 	double toplamMesafe;
@@ -114,33 +181,36 @@ int mesafeHesap(int koorX, int koorY, int yon) {
 }
 
 
-int canavar() {		
-	
-	int kontrolX, kontrolY;
+void CanavarYonBelirle(){
 	
 	if(Canavar.canavar.yon != LEFT && CanavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
 		
-		mesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
+		CanavarMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
 	}
 	
 	if(Canavar.canavar.yon != RIGHT && CanavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
 		
-		mesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
+		CanavarMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
 	}
 	
 	if(Canavar.canavar.yon != UP && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
 		
-		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
+		CanavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
 	}
 	
 	if(Canavar.canavar.yon != DOWN && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
 		
-		mesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
+		CanavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
-	
-	Canavar.enKisaMesafe = 100;
+	Canavar.enKisaMesafe = 100;	
+}
+
+
+int CanavarHareketEt() {		
+		
+	int kontrolX, kontrolY;
 	
 	switch(Canavar.canavar.yon) {
 		
@@ -174,7 +244,7 @@ int canavar() {
 			Canavar.canavar.hareketY = 0;	
 		}
 		
-		if(harita[kontrolY][kontrolX] == '@') {
+		else if(harita[kontrolY][kontrolX] == '@') {
 		
 			return 0;		
 				
@@ -190,43 +260,7 @@ int canavar() {
 }
 
 
-int pacMan() {
-
-	int kontrolX, kontrolY;
-
-	kontrolX = PacMan.pacMan.konumX + PacMan.pacMan.hareketX;
-	kontrolY = PacMan.pacMan.konumY + PacMan.pacMan.hareketY;
-
-	if(harita[kontrolY][kontrolX] == '#') {
-
-		PacMan.pacMan.hareketX = 0;
-		PacMan.pacMan.hareketY = 0;	
-	} 
-	
-	if(harita[kontrolY][kontrolX] == '&') {
-		
-		return 0;				
-	}
-	
-	else {
-		
-		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = ' ';
-		
-		PacMan.pacMan.konumX += PacMan.pacMan.hareketX;
-		PacMan.pacMan.konumY += PacMan.pacMan.hareketY;
-		
-		if(harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] == '+') {
-		
-			Oyuncu.skor++;
-			yem = 0;				
-		}
-							
-		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = '@';						
-	}	
-}
-
-
-void PacMan_hareket() {
+void pacManHareketInput() {
 
 	if(kbhit()){
 
@@ -274,53 +308,39 @@ void PacMan_hareket() {
 		}
 	}		
 }	
+
+
+int pacManHareketEt() {
+
+	int kontrolX, kontrolY;
+
+	kontrolX = PacMan.pacMan.konumX + PacMan.pacMan.hareketX;
+	kontrolY = PacMan.pacMan.konumY + PacMan.pacMan.hareketY;
+
+	if(harita[kontrolY][kontrolX] == '#') {
+
+		PacMan.pacMan.hareketX = 0;
+		PacMan.pacMan.hareketY = 0;	
+	} 
 	
-
-void set_cursor_position(int x, int y)
-{
-   COORD coord = { x, y };
-   SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-} 
-
-
-void hidecursor()
-{
-   HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-   CONSOLE_CURSOR_INFO info;
-   info.dwSize = 100;
-   info.bVisible = FALSE;
-   SetConsoleCursorInfo(consoleHandle, &info);
-}
-
-
-int main() {	
+	if(harita[kontrolY][kontrolX] == '&') {
 		
-	int x, y; 
-	Oyuncu.skor = 0;
-			
-	PacMan.pacMan.konumX = 15;
-	PacMan.pacMan.konumY = 17;
-	PacMan.pacMan.hareketX = 0;
-	PacMan.pacMan.hareketY = 0;
-	
-	Canavar.canavar.konumX = 1;
-	Canavar.canavar.konumY = 1;
-	
-	system("cls");	
-	
-	while(1) {
-		
-		set_cursor_position(0,0);
-		hidecursor();
-		
-		haritaOlustur();		
-		y = canavar();
-		PacMan_hareket();
-		x = pacMan();	
-			
-		if(x == 0 || y == 0) {
-			
-			return 0;		
-		}
+		return 0;				
 	}
+	
+	else {
+		
+		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = ' ';
+		
+		PacMan.pacMan.konumX += PacMan.pacMan.hareketX;
+		PacMan.pacMan.konumY += PacMan.pacMan.hareketY;
+		
+		if(harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] == '+') {
+		
+			Oyuncu.skor++;
+			yem = 0;				
+		}
+							
+		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = '@';						
+	}	
 }
