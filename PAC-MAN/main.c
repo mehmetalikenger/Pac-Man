@@ -163,19 +163,19 @@ bool CanavarYonKontrol(int x, int y) {
 int CanavarMesafeHesap(int koorX, int koorY, int yon) {
 	
 	int mesafeX, mesafeY; 
-	double toplamMesafe;
+	double Mesafe;
 	
 	mesafeX = koorX - PacMan.pacMan.konumX;
 	mesafeY = koorY - PacMan.pacMan.konumY;
 	
-	toplamMesafe = sqrt(mesafeX * mesafeX + mesafeY * mesafeY);
+	Mesafe = sqrt(mesafeX * mesafeX + mesafeY * mesafeY);
 	
-	if(toplamMesafe < Canavar.enKisaMesafe) {
+	if(Mesafe < Canavar.enKisaMesafe) {
 		
-		Canavar.enKisaMesafe = toplamMesafe;	
+		Canavar.enKisaMesafe = Mesafe;	
 		Canavar.tempYon = yon;
 	
-	} else if(toplamMesafe == Canavar.enKisaMesafe){
+	} else if(Mesafe == Canavar.enKisaMesafe){
 		
 		return 0;
 	}
