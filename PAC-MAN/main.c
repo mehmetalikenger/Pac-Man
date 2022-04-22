@@ -5,12 +5,12 @@
 #define H 19
 #define W 39
 	
-
+	
 void haritaOlustur();
-bool CanavarYonKontrol(int x, int y);
-int CanavarMesafeHesap(int koorX, int koorY, int yon);
-void CanavarYonBelirle();		
-int CanavarHareketEt();
+bool canavarYonKontrol(int x, int y);
+int canavarMesafeHesap(int koorX, int koorY, int yon);
+void canavarYonBelirle();		
+int canavarHareketEt();
 void pacManHareketInput();
 int pacManHareketEt();
 
@@ -56,7 +56,7 @@ char harita[H][W] =
 };
 
 
-enum CanavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
+enum canavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
 
 
 typedef struct Hareket{
@@ -69,7 +69,7 @@ typedef struct Hareket{
 } hareket;
 
 
-struct CanavarBilgi{
+struct canavarBilgi{
 	
 	int tempYon;
 	double enKisaMesafe;
@@ -77,13 +77,13 @@ struct CanavarBilgi{
 }Canavar;
 
 
-struct PacManBilgi{
+struct pacManBilgi{
 	
 	hareket pacMan;	
 }PacMan;
 
 
-struct OyuncuBilgi {
+struct oyuncuBilgi {
 	
 	char isim[20];
 	int skor;	
@@ -114,8 +114,8 @@ int main() {
 		hidecursor();
 		
 		haritaOlustur();		
-		y = CanavarHareketEt();
-		CanavarYonBelirle();
+		y = canavarHareketEt();
+		canavarYonBelirle();
 		pacManHareketInput();
 		x = pacManHareketEt();	
 			
@@ -147,7 +147,7 @@ void haritaOlustur() {
 }
 
 
-bool CanavarYonKontrol(int x, int y) {
+bool canavarYonKontrol(int x, int y) {
 	
 	if(harita[y][x] != '#' && harita[y][x] != '+'){
 		
@@ -160,7 +160,7 @@ bool CanavarYonKontrol(int x, int y) {
 }
 
 
-int CanavarMesafeHesap(int koorX, int koorY, int yon) {
+int canavarMesafeHesap(int koorX, int koorY, int yon) {
 	
 	int mesafeX, mesafeY; 
 	double Mesafe;
@@ -168,7 +168,7 @@ int CanavarMesafeHesap(int koorX, int koorY, int yon) {
 	mesafeX = koorX - PacMan.pacMan.konumX;
 	mesafeY = koorY - PacMan.pacMan.konumY;
 	
-	Mesafe = sqrt(mesafeX * mesafeX + mesafeY * mesafeY);
+	Mesafe = mesafeX * mesafeX + mesafeY * mesafeY;
 	
 	if(Mesafe < Canavar.enKisaMesafe) {
 		
@@ -182,34 +182,34 @@ int CanavarMesafeHesap(int koorX, int koorY, int yon) {
 }
 
 
-void CanavarYonBelirle(){
+void canavarYonBelirle(){
 	
-	if(Canavar.canavar.yon != LEFT && CanavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
 		
-		CanavarMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
+		canavarMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
 	}
 	
-	if(Canavar.canavar.yon != RIGHT && CanavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
 		
-		CanavarMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
+		canavarMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
 	}
 	
-	if(Canavar.canavar.yon != UP && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
+	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
 		
-		CanavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
+		canavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
 	}
 	
-	if(Canavar.canavar.yon != DOWN && CanavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
+	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
 		
-		CanavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
+		canavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
-	Canavar.enKisaMesafe = 100;	
+	Canavar.enKisaMesafe = 1000;	
 }
 
 
-int CanavarHareketEt() {		
+int canavarHareketEt() {		
 		
 	int kontrolX, kontrolY;
 	
@@ -239,7 +239,7 @@ int CanavarHareketEt() {
 		kontrolX = Canavar.canavar.konumX + Canavar.canavar.hareketX;
 		kontrolY = Canavar.canavar.konumY + Canavar.canavar.hareketY;
 				
-		if(!CanavarYonKontrol(kontrolX, kontrolY)) {
+		if(!canavarYonKontrol(kontrolX, kontrolY)) {
 	
 			Canavar.canavar.hareketX = 0;
 			Canavar.canavar.hareketY = 0;	
@@ -251,7 +251,7 @@ int CanavarHareketEt() {
 				
 		} else {
 				
-    			harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+    		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
 			
 			Canavar.canavar.konumX += Canavar.canavar.hareketX;
 			Canavar.canavar.konumY += Canavar.canavar.hareketY;
