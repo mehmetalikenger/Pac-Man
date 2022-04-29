@@ -240,14 +240,9 @@ int canavarHareketEt() {
 		kontrolY = Canavar.canavar.konumY + Canavar.canavar.hareketY;
 				
 		if(!canavarYonKontrol(kontrolX, kontrolY)) {
-	
+		
 			Canavar.canavar.hareketX = 0;
-			Canavar.canavar.hareketY = 0;	
-		}
-		
-		else if(harita[kontrolY][kontrolX] == '@') {
-		
-			return 0;		
+			Canavar.canavar.hareketY = 0;		
 				
 		} else {
 				
