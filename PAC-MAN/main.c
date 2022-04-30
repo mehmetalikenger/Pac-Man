@@ -8,7 +8,7 @@
 	
 void haritaOlustur();
 bool canavarYonKontrol(int x, int y);
-int canavarMesafeHesap(int koorX, int koorY, int yon);
+int canavarPacManArasiMesafeHesap(int koorX, int koorY, int yon);
 void canavarYonBelirle();		
 int canavarHareketEt();
 void pacManHareketInput();
@@ -69,7 +69,7 @@ typedef struct Hareket{
 } hareket;
 
 
-struct canavarBilgi{
+struct canavarBilgileri{
 	
 	int tempYon;
 	double enKisaMesafe;
@@ -77,13 +77,13 @@ struct canavarBilgi{
 }Canavar;
 
 
-struct pacManBilgi{
+struct pacManBilgileri{
 	
 	hareket pacMan;	
 }PacMan;
 
 
-struct oyuncuBilgi {
+struct oyuncuBilgileri{
 	
 	char isim[20];
 	int skor;	
@@ -160,13 +160,13 @@ bool canavarYonKontrol(int x, int y) {
 }
 
 
-int canavarMesafeHesap(int koorX, int koorY, int yon) {
+int canavarPacManArasiMesafeHesap(int koordinatX, int koordinatY, int yon) {
 	
 	int mesafeX, mesafeY; 
 	double Mesafe;
 	
-	mesafeX = koorX - PacMan.pacMan.konumX;
-	mesafeY = koorY - PacMan.pacMan.konumY;
+	mesafeX = koordinatX - PacMan.pacMan.konumX;
+	mesafeY = koordinatY - PacMan.pacMan.konumY;
 	
 	Mesafe = mesafeX * mesafeX + mesafeY * mesafeY;
 	
@@ -186,22 +186,22 @@ void canavarYonBelirle(){
 	
 	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
 		
-		canavarMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
+		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
 	}
 	
 	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
 		
-		canavarMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
 	}
 	
 	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
 		
-		canavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
 	}
 	
 	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
 		
-		canavarMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
@@ -244,7 +244,12 @@ int canavarHareketEt() {
 			Canavar.canavar.hareketX = 0;
 			Canavar.canavar.hareketY = 0;		
 				
-		} else {
+		} else if(harita[kontrolY][kontrolX] == '@') {
+			
+			return 0;
+		}
+		
+		else {
 				
     		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
 			
