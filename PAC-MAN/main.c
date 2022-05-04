@@ -61,10 +61,10 @@ enum canavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
 
 typedef struct Hareket{
 	
-	int konumX;
-	int konumY;
-	int hareketX;
-	int hareketY;
+	int sutunIndeks;
+	int satirIndeks;
+	int sutunYonundeHareket;
+	int satirYonundeHareket;
 	int yon;	
 } hareket;
 
@@ -98,13 +98,13 @@ int main() {
 	int x, y; 
 	Oyuncu.skor = 0;
 			
-	PacMan.pacMan.konumX = 15;
-	PacMan.pacMan.konumY = 17;
-	PacMan.pacMan.hareketX = 0;
-	PacMan.pacMan.hareketY = 0;
+	PacMan.pacMan.sutunIndeks = 15;
+	PacMan.pacMan.satirIndeks = 17;
+	PacMan.pacMan.sutunYonundeHareket = 0;
+	PacMan.pacMan.satirYonundeHareket = 0;
 	
-	Canavar.canavar.konumX = 1;
-	Canavar.canavar.konumY = 1;
+	Canavar.canavar.sutunIndeks = 1;
+	Canavar.canavar.satirIndeks = 1;
 	
 	system("cls");	
 	
@@ -147,9 +147,9 @@ void haritaOlustur() {
 }
 
 
-bool canavarYonKontrol(int x, int y) {
+bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks) {
 	
-	if(harita[y][x] != '#' && harita[y][x] != '+'){
+	if(harita[canavarSatirIndeks][canavarSutunIndeks] != '#' && harita[canavarSatirIndeks][canavarSutunIndeks] != '+'){
 		
 		return true;		
 	
@@ -160,15 +160,15 @@ bool canavarYonKontrol(int x, int y) {
 }
 
 
-int canavarPacManArasiMesafeHesap(int koordinatX, int koordinatY, int yon) {
+int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks, int yon) {
 	
-	int mesafeX, mesafeY; 
+	int sutunUzakligi, satirUzakligi; 
 	double Mesafe;
 	
-	mesafeX = koordinatX - PacMan.pacMan.konumX;
-	mesafeY = koordinatY - PacMan.pacMan.konumY;
+	sutunUzakligi = canavarSutunIndeks - PacMan.pacMan.sutunIndeks;
+	satirUzakligi = canavarSatirIndeks - PacMan.pacMan.satirIndeks;
 	
-	Mesafe = mesafeX * mesafeX + mesafeY * mesafeY;
+	Mesafe = sutunUzakligi * sutunUzakligi + satirUzakligi * satirUzakligi;
 	
 	if(Mesafe < Canavar.enKisaMesafe) {
 		
@@ -184,24 +184,24 @@ int canavarPacManArasiMesafeHesap(int koordinatX, int koordinatY, int yon) {
 
 void canavarYonBelirle(){
 	
-	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.konumX+1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.sutunIndeks+1, Canavar.canavar.satirIndeks)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX+1, Canavar.canavar.konumY, RIGHT);	
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks+1, Canavar.canavar.satirIndeks, RIGHT);	
 	}
 	
-	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.konumX-1, Canavar.canavar.konumY)) {
+	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.sutunIndeks-1, Canavar.canavar.satirIndeks)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX-1, Canavar.canavar.konumY, LEFT);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks-1, Canavar.canavar.satirIndeks, LEFT);		
 	}
 	
-	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY+1)) {
+	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks+1)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY+1, DOWN);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks+1, DOWN);		
 	}
 	
-	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.konumX, Canavar.canavar.konumY-1)) {
+	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks-1)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.konumX, Canavar.canavar.konumY-1, UP);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks-1, UP);		
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
@@ -211,52 +211,52 @@ void canavarYonBelirle(){
 
 int canavarHareketEt() {		
 		
-	int kontrolX, kontrolY;
+	int sutunKontrol, satirKontrol;
 	
 	switch(Canavar.canavar.yon) {
 		
 		case UP:
-			Canavar.canavar.hareketX = 0;
-			Canavar.canavar.hareketY = -1;
+			Canavar.canavar.sutunYonundeHareket = 0;
+			Canavar.canavar.satirYonundeHareket = -1;
 			break;
 			
 		case DOWN:
-			Canavar.canavar.hareketX = 0;
-			Canavar.canavar.hareketY = 1;
+			Canavar.canavar.sutunYonundeHareket = 0;
+			Canavar.canavar.satirYonundeHareket = 1;
 			break;
 		
 		case LEFT:
-			Canavar.canavar.hareketX = -1;
-			Canavar.canavar.hareketY = 0;
+			Canavar.canavar.sutunYonundeHareket = -1;
+			Canavar.canavar.satirYonundeHareket = 0;
 			break;
 			
 		case RIGHT:
-			Canavar.canavar.hareketX = 1;         
-			Canavar.canavar.hareketY = 0;
+			Canavar.canavar.sutunYonundeHareket = 1;         
+			Canavar.canavar.satirYonundeHareket = 0;
 			break;							
 		}
 		
-		kontrolX = Canavar.canavar.konumX + Canavar.canavar.hareketX;
-		kontrolY = Canavar.canavar.konumY + Canavar.canavar.hareketY;
+		sutunKontrol = Canavar.canavar.sutunIndeks + Canavar.canavar.sutunYonundeHareket;
+		satirKontrol = Canavar.canavar.satirIndeks + Canavar.canavar.satirYonundeHareket;
 				
-		if(!canavarYonKontrol(kontrolX, kontrolY)) {
+		if(!canavarYonKontrol(sutunKontrol, satirKontrol)) {
 		
-			Canavar.canavar.hareketX = 0;
-			Canavar.canavar.hareketY = 0;		
+			Canavar.canavar.sutunYonundeHareket = 0;
+			Canavar.canavar.satirYonundeHareket = 0;		
 				
-		} else if(harita[kontrolY][kontrolX] == '@') {
+		} else if(harita[satirKontrol][sutunKontrol] == '@') {
 			
 			return 0;
 		}
 		
 		else {
 				
-    		harita[Canavar.canavar.konumY][Canavar.canavar.konumX] =' ';		
+    		harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] =' ';		
 			
-			Canavar.canavar.konumX += Canavar.canavar.hareketX;
-			Canavar.canavar.konumY += Canavar.canavar.hareketY;
+			Canavar.canavar.sutunIndeks += Canavar.canavar.sutunYonundeHareket;
+			Canavar.canavar.satirIndeks += Canavar.canavar.satirYonundeHareket;
 		
-			harita[Canavar.canavar.konumY][Canavar.canavar.konumX] ='&';	
+			harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] ='&';	
 		}
 }
 
@@ -268,43 +268,43 @@ void pacManHareketInput() {
 		switch(getch()) {
 
 			case 'w':
-				PacMan.pacMan.hareketX = 0;
-				PacMan.pacMan.hareketY = -1;
+				PacMan.pacMan.sutunYonundeHareket = 0;
+				PacMan.pacMan.satirYonundeHareket = -1;
 		  		break;
 		  		
 		  	case 'W':
-				PacMan.pacMan.hareketX = 0;
-				PacMan.pacMan.hareketY = -1;
+				PacMan.pacMan.sutunYonundeHareket = 0;
+				PacMan.pacMan.satirYonundeHareket = -1;
 		  		break;
 
 		  	case 's':
-				PacMan.pacMan.hareketX = 0;
-				PacMan.pacMan.hareketY = +1;
+				PacMan.pacMan.sutunYonundeHareket = 0;
+				PacMan.pacMan.satirYonundeHareket = +1;
 		  		break;
 		  		
 		  	case 'S':
-				PacMan.pacMan.hareketX = 0;
-				PacMan.pacMan.hareketY = -1;
+				PacMan.pacMan.sutunYonundeHareket = 0;
+				PacMan.pacMan.satirYonundeHareket = -1;
 		  		break;
 
 		  	case 'a':
-				PacMan.pacMan.hareketX = -1;
-				PacMan.pacMan.hareketY = 0;
+				PacMan.pacMan.sutunYonundeHareket = -1;
+				PacMan.pacMan.satirYonundeHareket = 0;
 		  		break;
 		  		
 		  	case 'A':
-				PacMan.pacMan.hareketX = -1;
-				PacMan.pacMan.hareketY = 0;
+				PacMan.pacMan.sutunYonundeHareket = -1;
+				PacMan.pacMan.satirYonundeHareket = 0;
 		  		break;
 
 		  	case 'd':
-				PacMan.pacMan.hareketX = +1;
-				PacMan.pacMan.hareketY = 0;
+				PacMan.pacMan.sutunYonundeHareket = +1;
+				PacMan.pacMan.satirYonundeHareket = 0;
 		  		break;	
 		  		
 		  	case 'D':
-				PacMan.pacMan.hareketX = +1;
-				PacMan.pacMan.hareketY = 0;
+				PacMan.pacMan.sutunYonundeHareket = +1;
+				PacMan.pacMan.satirYonundeHareket = 0;
 		  		break;		  			
 		}
 	}		
@@ -313,35 +313,35 @@ void pacManHareketInput() {
 
 int pacManHareketEt() {
 
-	int kontrolX, kontrolY;
+	int sutunKontrol, satirKontrol;
 
-	kontrolX = PacMan.pacMan.konumX + PacMan.pacMan.hareketX;
-	kontrolY = PacMan.pacMan.konumY + PacMan.pacMan.hareketY;
+	sutunKontrol = PacMan.pacMan.sutunIndeks + PacMan.pacMan.sutunYonundeHareket;
+	satirKontrol = PacMan.pacMan.satirIndeks + PacMan.pacMan.satirYonundeHareket;
 
-	if(harita[kontrolY][kontrolX] == '#') {
+	if(harita[satirKontrol][sutunKontrol] == '#') {
 
-		PacMan.pacMan.hareketX = 0;
-		PacMan.pacMan.hareketY = 0;	
+		PacMan.pacMan.sutunYonundeHareket = 0;
+		PacMan.pacMan.satirYonundeHareket = 0;	
 	} 
 	
-	if(harita[kontrolY][kontrolX] == '&') {
+	if(harita[satirKontrol][sutunKontrol] == '&') {
 		
 		return 0;				
 	}
 	
 	else {
 		
-		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = ' ';
+		harita[PacMan.pacMan.satirIndeks][PacMan.pacMan.sutunIndeks] = ' ';
 		
-		PacMan.pacMan.konumX += PacMan.pacMan.hareketX;
-		PacMan.pacMan.konumY += PacMan.pacMan.hareketY;
+		PacMan.pacMan.sutunIndeks += PacMan.pacMan.sutunYonundeHareket;
+		PacMan.pacMan.satirIndeks += PacMan.pacMan.satirYonundeHareket;
 		
-		if(harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] == '+') {
+		if(harita[PacMan.pacMan.satirIndeks][PacMan.pacMan.sutunIndeks] == '+') {
 		
 			Oyuncu.skor++;
 			yem = 0;				
 		}
 							
-		harita[PacMan.pacMan.konumY][PacMan.pacMan.konumX] = '@';						
+		harita[PacMan.pacMan.satirIndeks][PacMan.pacMan.sutunIndeks] = '@';						
 	}	
 }
