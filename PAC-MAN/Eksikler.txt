@@ -1,6 +1,2 @@
-Menu Fonksiyonu
-Kullanıcıdan isim isteme
-YemOlustur Fonksiyonu
-Skor Fonksiyonu
-GameOver Fonksiyonu
-Fonksiyonları Main'de birleştirme
+canavarın yeme çarpıp donması
+main fonksiyonunun düzenlenmesi
