@@ -67,6 +67,7 @@ char harita[H][W] =
 
 enum canavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
 
+char YolUzerindekiKarakter = ' ';
 
 typedef struct Hareket{
 	
@@ -152,7 +153,7 @@ int main() {
 			
 				haritaOlustur();
 			
-				if(yemKontrol==0)
+				if(yemKontrol == 0)
 				{
 					yemOlustur();
 				}	
@@ -164,11 +165,11 @@ int main() {
 				
 				if(x == 0 || y == 0){
 			
-				gameOverYaz();
+					gameOverYaz();
 				
-				liderlikTablosunaKayitEkle();
+					liderlikTablosunaKayitEkle();
 				
-				break;		
+					break;		
 				}
 	  		}			
 		}	
@@ -182,34 +183,37 @@ void liderlikTablosunaKayitEkle(){
 	
 	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
 	{
-		printf("dosya acilamadý...\n"); exit(1);
+		printf("dosya acilamadi...\n"); exit(1);
 	}
 			
-	fread(&oyuncuOkuma,sizeof(oyuncuOkuma),1,pdosya);
+	fread(&oyuncuOkuma,sizeof(oyuncuOkuma), 1, pdosya);
 			
 	fclose(pdosya);
 			
-	if((pdosya=fopen("OyuncuBilgi.txt","ab+"))==NULL)
+	if((pdosya = fopen("OyuncuBilgi.txt","ab+")) == NULL)
 	{
-		printf("dosya acilamadi...");   exit(1);
+		printf("dosya acilamadi...");   
+		exit(1);
 	}
 			
-	if(Oyuncu.oyuncuNumarasi==NULL)
+	if(Oyuncu.oyuncuNumarasi == NULL)
 	{
-		Oyuncu.oyuncuNumarasi=1;
+		Oyuncu.oyuncuNumarasi = 1;
 	}
 	else
 	{
-		Oyuncu.oyuncuNumarasi=oyuncuOkuma.oyuncuNumarasi+1;
+		Oyuncu.oyuncuNumarasi = oyuncuOkuma.oyuncuNumarasi + 1;
 	}
 			
-	printf("Kullanici adi:"); gets(Oyuncu.isim);
+	printf("Kullanici adi:"); 
+	gets(Oyuncu.isim);
 			
-	fseek(pdosya,(Oyuncu.oyuncuNumarasi-1)*sizeof(Oyuncu),SEEK_SET);
+	fseek(pdosya, (Oyuncu.oyuncuNumarasi - 1)*sizeof(Oyuncu), SEEK_SET);
 			
 	if(fwrite(&Oyuncu, sizeof(Oyuncu), 1, pdosya)!= 1)
 	{
-		printf("Yazma Hatasi\n"); exit(1);
+		printf("Yazma Hatasi\n"); 
+		exit(1);
 	}
 			
 	rewind(pdosya);
@@ -221,14 +225,15 @@ void liderlikTablosunaKayitEkle(){
 void liderlikTablosuYazdir(){
 	
 	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
-			{
-			printf("dosya acilamadý...\n"); exit(1);
-			}
+	{
+		printf("dosya acilamady...\n"); 
+		exit(1);
+	}
 			
 	while(fread(&oyuncuOkuma,sizeof(oyuncuOkuma), 1, pdosya))
 	{
 		printf("Kullanici adi: %s\t", oyuncuOkuma.isim);
-		printf("Skoru:%d\n", oyuncuOkuma.skor);
+		printf("Skoru: %d\n", oyuncuOkuma.skor);
 		printf("\n");
 	}
 }
@@ -242,7 +247,7 @@ void haritaTemizle() {
 
 		for(j = 0; j < W; j++) {
 
-			if(harita[i][j] =='@' || harita[i][j] =='&')
+			if(harita[i][j] == '@' || harita[i][j] == '&')
 			harita[i][j] = ' ';	
 		}
 	}	
@@ -279,7 +284,7 @@ void gameOverYaz(){
 	
 	printf("*********************************************************\n\n");
 	
-	printf("Skorunuz:%d \n\n", Oyuncu.skor);
+	printf("Skorunuz: %d \n\n", Oyuncu.skor);
 }
 
 
@@ -306,7 +311,7 @@ void ekraniTemizle(){
 
 bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks) {
 	
-	if(harita[canavarSatirIndeks][canavarSutunIndeks] != '#' && harita[canavarSatirIndeks][canavarSutunIndeks] != '+'){
+	if(harita[canavarSatirIndeks][canavarSutunIndeks] != '#'){
 		
 		return true;		
 	
@@ -341,24 +346,24 @@ int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks
 
 void canavarYonBelirle(){
 	
-	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.sutunIndeks+1, Canavar.canavar.satirIndeks)) {
+	if(Canavar.canavar.yon != LEFT && canavarYonKontrol(Canavar.canavar.sutunIndeks + 1, Canavar.canavar.satirIndeks)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks+1, Canavar.canavar.satirIndeks, RIGHT);	
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks + 1, Canavar.canavar.satirIndeks, RIGHT);	
 	}
 	
-	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.sutunIndeks-1, Canavar.canavar.satirIndeks)) {
+	if(Canavar.canavar.yon != RIGHT && canavarYonKontrol(Canavar.canavar.sutunIndeks - 1, Canavar.canavar.satirIndeks)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks-1, Canavar.canavar.satirIndeks, LEFT);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks - 1, Canavar.canavar.satirIndeks, LEFT);		
 	}
 	
-	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks+1)) {
+	if(Canavar.canavar.yon != UP && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks + 1)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks+1, DOWN);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks + 1, DOWN);		
 	}
 	
-	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks-1)) {
+	if(Canavar.canavar.yon != DOWN && canavarYonKontrol(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks - 1)) {
 		
-		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks-1, UP);		
+		canavarPacManArasiMesafeHesap(Canavar.canavar.sutunIndeks, Canavar.canavar.satirIndeks - 1, UP);		
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
@@ -404,11 +409,12 @@ int canavarHareketEt() {
 		} else if(harita[satirKontrol][sutunKontrol] == '@') {
 			
 			return 0;
-		}
 		
-		else {
+		} else {
 				
-    		harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] =' ';		
+    		harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] = YolUzerindekiKarakter;	
+			
+			YolUzerindekiKarakter = harita[satirKontrol][sutunKontrol];
 			
 			Canavar.canavar.sutunIndeks += Canavar.canavar.sutunYonundeHareket;
 			Canavar.canavar.satirIndeks += Canavar.canavar.satirYonundeHareket;
@@ -470,13 +476,13 @@ void pacManHareketInput() {
 
 int yemOlustur() {
 	
-	int yemKonumX,yemKonumY;
+	int yemKonumX, yemKonumY;
 	
 	//srand(time(NULL));	
 		
-	yemKonumX = rand() % W; 
+	yemKonumX = 1 + rand() % (W - 1); 
 	
-	yemKonumY = rand() % H; 
+	yemKonumY = 1 + rand() % (H - 1); 
 	
 	if(harita[yemKonumY][yemKonumX]!= '#' && harita[yemKonumY][yemKonumX]!= '@' && harita[yemKonumY][yemKonumX]!= '&')
 	{
@@ -525,4 +531,3 @@ int pacManHareketEt() {
 		harita[PacMan.pacMan.satirIndeks][PacMan.pacMan.sutunIndeks] = '@';						
 	}	
 }
-
