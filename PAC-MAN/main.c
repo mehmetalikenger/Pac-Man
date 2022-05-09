@@ -110,7 +110,7 @@ int main() {
 	{	
 		anaMenuOlustur();
 	
-		int anaMenuKomutAl=getch();
+		int anaMenuKomutAl = getch();
 	
 		if(anaMenuKomutAl == 'q' || anaMenuKomutAl == 'Q')
 		{
@@ -128,7 +128,7 @@ int main() {
 			getch();
 		}
 	
-		if(anaMenuKomutAl=='e'||anaMenuKomutAl=='E')
+		if(anaMenuKomutAl == 'e'||anaMenuKomutAl == 'E')
 		{
 	
 			ekraniTemizle();	
@@ -186,11 +186,11 @@ void liderlikTablosunaKayitEkle(){
 		printf("dosya acilamadi...\n"); exit(1);
 	}
 			
-	fread(&oyuncuOkuma,sizeof(oyuncuOkuma), 1, pdosya);
+	fread(&oyuncuOkuma, sizeof(oyuncuOkuma), 1, pdosya);
 			
 	fclose(pdosya);
 			
-	if((pdosya = fopen("OyuncuBilgi.txt","ab+")) == NULL)
+	if((pdosya = fopen("OyuncuBilgi.txt", "ab+")) == NULL)
 	{
 		printf("dosya acilamadi...");   
 		exit(1);
@@ -205,7 +205,7 @@ void liderlikTablosunaKayitEkle(){
 		Oyuncu.oyuncuNumarasi = oyuncuOkuma.oyuncuNumarasi + 1;
 	}
 			
-	printf("Kullanici adi:"); 
+	printf("Kullanici adi: "); 
 	gets(Oyuncu.isim);
 			
 	fseek(pdosya, (Oyuncu.oyuncuNumarasi - 1)*sizeof(Oyuncu), SEEK_SET);
@@ -224,7 +224,7 @@ void liderlikTablosunaKayitEkle(){
 
 void liderlikTablosuYazdir(){
 	
-	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
+	if((pdosya=fopen("OyuncuBilgi.txt", "ab+")) == NULL)
 	{
 		printf("dosya acilamady...\n"); 
 		exit(1);
