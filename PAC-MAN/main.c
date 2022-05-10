@@ -183,10 +183,11 @@ void liderlikTablosunaKayitEkle(){
 	
 	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
 	{
-		printf("dosya acilamadi...\n"); exit(1);
+		printf("dosya acilamadi...\n"); 
+		exit(1);
 	}
 			
-	fread(&oyuncuOkuma,sizeof(oyuncuOkuma), 1, pdosya);
+	fread(&oyuncuOkuma, sizeof(oyuncuOkuma), 1, pdosya);
 			
 	fclose(pdosya);
 			
@@ -196,16 +197,12 @@ void liderlikTablosunaKayitEkle(){
 		exit(1);
 	}
 			
-	if(Oyuncu.oyuncuNumarasi == NULL)
-	{
-		Oyuncu.oyuncuNumarasi = 1;
-	}
 	else
 	{
 		Oyuncu.oyuncuNumarasi = oyuncuOkuma.oyuncuNumarasi + 1;
 	}
 			
-	printf("Kullanici adi:"); 
+	printf("Kullanici adi: "); 
 	gets(Oyuncu.isim);
 			
 	fseek(pdosya, (Oyuncu.oyuncuNumarasi - 1)*sizeof(Oyuncu), SEEK_SET);
