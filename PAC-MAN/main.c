@@ -110,7 +110,7 @@ int main() {
 	{	
 		anaMenuOlustur();
 	
-		int anaMenuKomutAl=getch();
+		int anaMenuKomutAl = getch();
 	
 		if(anaMenuKomutAl == 'q' || anaMenuKomutAl == 'Q')
 		{
@@ -128,7 +128,7 @@ int main() {
 			getch();
 		}
 	
-		if(anaMenuKomutAl=='e'||anaMenuKomutAl=='E')
+		if(anaMenuKomutAl == 'e'||anaMenuKomutAl == 'E')
 		{
 	
 			ekraniTemizle();	
@@ -191,7 +191,7 @@ void liderlikTablosunaKayitEkle(){
 			
 	fclose(pdosya);
 			
-	if((pdosya = fopen("OyuncuBilgi.txt","ab+")) == NULL)
+	if((pdosya = fopen("OyuncuBilgi.txt", "ab+")) == NULL)
 	{
 		printf("dosya acilamadi...");   
 		exit(1);
@@ -221,7 +221,7 @@ void liderlikTablosunaKayitEkle(){
 
 void liderlikTablosuYazdir(){
 	
-	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
+	if((pdosya=fopen("OyuncuBilgi.txt", "ab+")) == NULL)
 	{
 		printf("dosya acilamady...\n"); 
 		exit(1);
