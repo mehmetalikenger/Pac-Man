@@ -1,11 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
+#include <conio.h>
 #define H 19
-#define W 39
-	
+#define W 38
+
+
 FILE *pdosya;
+
 
 void liderlikTablosunaKayitEkle();
 void liderlikTablosuYazdir();
@@ -15,9 +20,8 @@ void anaMenuOlustur();
 void haritaTemizle();
 void haritaOlustur();
 int yemOlustur();	
-void haritaOlustur();
-bool canavarYonKontrol(int x, int y);
-int canavarPacManArasiMesafeHesap(int koorX, int koorY, int yon);
+bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks);
+int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks, int yon);
 void canavarYonBelirle();		
 int canavarHareketEt();
 void pacManHareketInput();
@@ -38,6 +42,11 @@ void hidecursor()
    info.dwSize = 100;
    info.bVisible = FALSE;
    SetConsoleCursorInfo(consoleHandle, &info);
+}
+
+void ekraniTemizle(){
+	
+	system("cls");
 }
 
 
@@ -67,7 +76,9 @@ char harita[H][W] =
 
 enum canavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
 
+
 char YolUzerindekiKarakter = ' ';
+
 
 typedef struct Hareket{
 	
@@ -75,7 +86,8 @@ typedef struct Hareket{
 	int satirIndeks;
 	int sutunYonundeHareket;
 	int satirYonundeHareket;
-	int yon;	
+	int yon;
+		
 } hareket;
 
 
@@ -84,12 +96,14 @@ struct canavarBilgileri{
 	int tempYon;
 	double enKisaMesafe;
 	hareket canavar;
+	
 }Canavar;
 
 
 struct pacManBilgileri{
 	
 	hareket pacMan;	
+	
 }PacMan;
 
 
@@ -98,6 +112,7 @@ struct oyuncuBilgileri{
 	int oyuncuNumarasi;
 	char isim[20];
 	int skor;	
+	
 }Oyuncu, oyuncuOkuma;
 
 	
@@ -177,7 +192,6 @@ int main() {
 }
 
 
-
 void liderlikTablosunaKayitEkle(){
 	
 	
@@ -223,11 +237,11 @@ void liderlikTablosuYazdir(){
 	
 	if((pdosya=fopen("OyuncuBilgi.txt", "ab+")) == NULL)
 	{
-		printf("dosya acilamady...\n"); 
+		printf("dosya acilamadi...\n"); 
 		exit(1);
 	}
 			
-	while(fread(&oyuncuOkuma,sizeof(oyuncuOkuma), 1, pdosya))
+	while(fread(&oyuncuOkuma, sizeof(oyuncuOkuma), 1, pdosya))
 	{
 		printf("Kullanici adi: %s\t", oyuncuOkuma.isim);
 		printf("Skoru: %d\n", oyuncuOkuma.skor);
@@ -238,7 +252,7 @@ void liderlikTablosuYazdir(){
 
 void haritaTemizle() {
 	
-	int i, j;
+	int i,j;
 		
 	for(i = 0; i < H; i++) {
 
@@ -249,7 +263,7 @@ void haritaTemizle() {
 		}
 	}	
 }
-
+	
 	
 void haritaOlustur() {
 	
@@ -273,7 +287,7 @@ void haritaOlustur() {
 
 void gameOverYaz(){
 	
-	system("cls");
+	ekraniTemizle();
 	
 	printf("*********************************************************\n\n");
 	
@@ -287,7 +301,7 @@ void gameOverYaz(){
 
 void anaMenuOlustur() {
 	
-	system("cls");
+	ekraniTemizle();
 	
 	printf("*********************************************************\n");
 	
@@ -297,12 +311,6 @@ void anaMenuOlustur() {
 	printf("Oyundan cikmak icin q tusuna bas\n\n");
 	
 	printf("*********************************************************");
-}
-
-
-void ekraniTemizle(){
-	
-	system("cls");
 }
 
 
@@ -473,9 +481,7 @@ void pacManHareketInput() {
 
 int yemOlustur() {
 	
-	int yemKonumX, yemKonumY;
-	
-	//srand(time(NULL));	
+	int yemKonumX, yemKonumY; 
 		
 	yemKonumX = 1 + rand() % (W - 1); 
 	
