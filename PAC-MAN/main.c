@@ -1,15 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <windows.h>
 #include <stdbool.h>
 #include <math.h>
-#include <time.h>
-#include <conio.h>
 #define H 19
 #define W 38
 
 
 FILE *pdosya;
+
 
 void ekraniTemizle();
 void haritaTemizle();
@@ -115,7 +113,7 @@ struct oyuncuBilgileri{
 	
 	int oyuncuNumarasi;
 	char isim[20];
-	int skor;	
+	int skor;
 	
 }Oyuncu, oyuncuOkuma;
 
@@ -128,8 +126,6 @@ int main() {
 	while(1)
 	{	
 		anaMenuOlustur();
-		
-		
 	
 		int anaMenuKomut = getch();
 	
@@ -159,8 +155,6 @@ int main() {
 			
 			PacMan.pacMan.sutunIndeks = 15;
 			PacMan.pacMan.satirIndeks = 17;
-			PacMan.pacMan.sutunYonundekiHareket = 0;
-			PacMan.pacMan.satirYonundekiHareket = 0;
 	
 			Canavar.canavar.sutunIndeks = 1;
 			Canavar.canavar.satirIndeks = 1;
