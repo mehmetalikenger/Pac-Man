@@ -1,13 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
+#include <conio.h>
 #define H 19
 #define W 38
 
 
 FILE *pdosya;
-
 
 void ekraniTemizle();
 void haritaTemizle();
@@ -18,7 +20,7 @@ void liderlikTablosuYazdir();
 bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks);
 int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks);
 void canavarYonBelirle();	
-void canavarHareketYonDegerleriniHesapla();
+void canavarYonHareketDegerleriniHesapla();
 int canavarHareketEt();
 void pacManHareketInput();
 int pacManHareketEt();
@@ -43,7 +45,7 @@ void hidecursor()
 }
 
 
-void ekraniTemizle(){
+void ekraniTemizle() {
 	
 	system("cls");
 }
@@ -113,7 +115,7 @@ struct oyuncuBilgileri{
 	
 	int oyuncuNumarasi;
 	char isim[20];
-	int skor;
+	int skor;	
 	
 }Oyuncu, oyuncuOkuma;
 
@@ -121,12 +123,12 @@ struct oyuncuBilgileri{
 int yemKontrol = 0;
 
 
-int main() {	
-		
+int main() {
+
 	while(1)
 	{	
 		anaMenuOlustur();
-	
+			
 		int anaMenuKomut = getch();
 	
 		if(anaMenuKomut == CikisYap || anaMenuKomut == CIKIS_YAP)
@@ -155,6 +157,8 @@ int main() {
 			
 			PacMan.pacMan.sutunIndeks = 15;
 			PacMan.pacMan.satirIndeks = 17;
+			PacMan.pacMan.sutunYonundekiHareket = 0;
+			PacMan.pacMan.satirYonundekiHareket = 0;
 	
 			Canavar.canavar.sutunIndeks = 1;
 			Canavar.canavar.satirIndeks = 1;
@@ -162,6 +166,8 @@ int main() {
 			haritaTemizle();
 		
 			while(1) {
+				
+				srand(time(NULL));	
 			
 				set_cursor_position(0,0);
 				hidecursor();
@@ -373,7 +379,7 @@ void canavarYonBelirle(){
 }
 
 
-void canavarHareketYonDegerleriniHesapla() {
+void canavarYonHareketDegerleriniHesapla() {
 
 	switch(Canavar.canavar.yon) {
 		
@@ -402,7 +408,7 @@ void canavarHareketYonDegerleriniHesapla() {
 
 int canavarHareketEt() {	
 
-	canavarHareketYonDegerleriniHesapla();
+	canavarYonHareketDegerleriniHesapla();
 		
 	int sutunKontrol, satirKontrol;
 		
