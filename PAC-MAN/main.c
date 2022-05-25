@@ -9,23 +9,7 @@
 #define W 38
 
 
-FILE *pdosya;
-
-void ekraniTemizle();
-void haritaTemizle();
-void anaMenuOlustur();
-void haritaOlustur();
-void liderlikTablosunaKayitEkle();
-void liderlikTablosuYazdir();
-bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks);
-int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks);
-void canavarYonBelirle();	
-void canavarYonHareketDegerleriniHesapla();
-int canavarHareketEt();
-void pacManHareketInput();
-int pacManHareketEt();
-int yemOlustur();
-void gameOverYaz();		
+FILE *pDosya;	
 
 
 void set_cursor_position(int x, int y)
@@ -75,9 +59,11 @@ char harita[H][W] =
 };
 
 
-enum anaMenuKomutlari{Oyna = 101, SkorlariYazdir = 119, CikisYap = 113};
-enum anaMenuKomutlariCapsLock{OYNA = 69, SKORLARI_YAZDIR = 87, CIKIS_YAP = 81};
-enum canavarYon{UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
+enum anaMenuKomutlari {Oyna = 101, Kontroller = 107, SkorlariYazdir = 119, OyundanCikisYap = 113};
+enum anaMenuKomutlariCapsLock {OYNA = 69, KONTROLLER = 75, SKORLARI_YAZDIR = 87, OYUNDAN_CIKIS_YAP = 81};
+enum oyunDurdur {oyunuDurdur = 112};
+enum oyunDurdurCapsLock {OYUNU_DURDUR = 80};
+enum canavarYon {UP = 119, DOWN = 115, RIGHT = 100, LEFT = 97};
 
 
 char YolUzerindekiKarakter = ' ';
@@ -111,38 +97,71 @@ struct pacManBilgileri{
 }PacMan;
 
 
-struct oyuncuBilgileri{
+typedef struct{
 	
-	int oyuncuNumarasi;
-	char isim[20];
+	char isim[10];
 	int skor;	
 	
-}Oyuncu, oyuncuOkuma;
+}oyuncuBilgileri;
 
-	
+oyuncuBilgileri bilgiler;
+
 int yemKontrol = 0;
+
+
+void ekraniTemizle();
+void haritaTemizle();
+void anaMenuOlustur();
+void kontrolTuslari();
+void karakterleriOyunIcinHazirla();
+void haritaOlustur(oyuncuBilgileri *oyuncuVerileri);
+void skorTablosunaKayitEkle();
+void skorTablosunuYazdir(oyuncuBilgileri *oyuncuVerileri);
+bool canavarYonKontrol(int canavarSutunIndeks, int canavarSatirIndeks);
+int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks);
+void canavarYonBelirle();	
+void canavarYonHareketDegerleriniHesapla();
+int InputaGoreIslemYap();
+int pacManHareketEt(oyuncuBilgileri *oyuncuVerileri);
+int yemOlustur();
+void gameOverYaz(oyuncuBilgileri *oyuncuVerileri);	
 
 
 int main() {
 
-	while(1)
-	{	
+	while(1) {	
+	
+		oyuncuBilgileri *oyuncu = NULL;
+
+		oyuncu = (oyuncuBilgileri *) malloc (sizeof(oyuncuBilgileri));	
+	
 		anaMenuOlustur();
 			
 		int anaMenuKomut = getch();
 	
-		if(anaMenuKomut == CikisYap || anaMenuKomut == CIKIS_YAP)
+		if(anaMenuKomut == OyundanCikisYap || anaMenuKomut == OYUNDAN_CIKIS_YAP)
 		{
 			return 0;
+		}
+		
+		if(anaMenuKomut == Kontroller || anaMenuKomut == KONTROLLER)
+		{
+			ekraniTemizle();
+			
+			kontrolTuslari();
+			
+			printf("\nAna menuye donmek icin herhangi bir tusa bas");
+	
+			getch();
 		}
 
 		if(anaMenuKomut == SkorlariYazdir || anaMenuKomut == SKORLARI_YAZDIR)	
 		{
 			ekraniTemizle();
 		
-			liderlikTablosuYazdir();
+			skorTablosunuYazdir(oyuncu);
 		
-			printf("Ana menuye donmek icin herhangi bir tusa bas");
+			printf("\nAna menuye donmek icin herhangi bir tusa bas");
 	
 			getch();
 		}
@@ -152,16 +171,11 @@ int main() {
 	
 			ekraniTemizle();	
 	
-			int x, y; 
-			Oyuncu.skor = 0;
+			int canavarinPacmanleKarsilasmasi, pacmaninCanavarlaKarsilasmasi;  
 			
-			PacMan.pacMan.sutunIndeks = 15;
-			PacMan.pacMan.satirIndeks = 17;
-			PacMan.pacMan.sutunYonundekiHareket = 0;
-			PacMan.pacMan.satirYonundekiHareket = 0;
-	
-			Canavar.canavar.sutunIndeks = 1;
-			Canavar.canavar.satirIndeks = 1;
+			karakterleriOyunIcinHazirla();
+			
+			oyuncu->skor = 0;
 		
 			haritaTemizle();
 		
@@ -172,7 +186,7 @@ int main() {
 				set_cursor_position(0,0);
 				hidecursor();
 			
-				haritaOlustur();
+				haritaOlustur(oyuncu);
 			
 				if(yemKontrol == 0)
 				{
@@ -180,15 +194,22 @@ int main() {
 				}	
 				
 				canavarYonBelirle();
-				y = canavarHareketEt();
-				pacManHareketInput();
-				x = pacManHareketEt();	
+				canavarinPacmanleKarsilasmasi = canavarHareketEt();
 				
-				if(x == 0 || y == 0){
+				if(InputaGoreIslemYap()) {
+					
+					break;
+				}
+				
+				pacmaninCanavarlaKarsilasmasi = pacManHareketEt(oyuncu);	
+						
+				if(pacmaninCanavarlaKarsilasmasi == 0 || canavarinPacmanleKarsilasmasi == 0){
 			
-					gameOverYaz();
+					gameOverYaz(oyuncu);
 				
-					liderlikTablosunaKayitEkle();
+					skorTablosunaKayitEkle(oyuncu);
+					
+					free(oyuncu);
 				
 					break;		
 				}
@@ -206,6 +227,7 @@ void anaMenuOlustur() {
 	
 	printf("PacMan v1 \n\n");
 	printf("Oyuna baslamak icin e tusuna bas \n\n");
+	printf("Kontrolleri goruntulemek icin k tusuna bas \n\n");
 	printf("Liderlik tablosu icin w tusuna bas\n\n");
 	printf("Oyundan cikmak icin q tusuna bas\n\n");
 	
@@ -213,60 +235,68 @@ void anaMenuOlustur() {
 }
 
 
-void liderlikTablosunaKayitEkle(){
+void kontrolTuslari() {
 	
+	printf("*********************************************************\n");
 	
-	if((pdosya=fopen("OyuncuBilgi.txt","ab+")) == NULL)
-	{
-		printf("dosya acilamadi...\n"); 
-		exit(1);
-	}
-			
-	fread(&oyuncuOkuma, sizeof(oyuncuOkuma), 1, pdosya);
-			
-	fclose(pdosya);
-			
-	if((pdosya = fopen("OyuncuBilgi.txt", "ab+")) == NULL)
-	{
-		printf("dosya acilamadi...");   
-		exit(1);
-	}
-			
-	else
-	{
-		Oyuncu.oyuncuNumarasi = oyuncuOkuma.oyuncuNumarasi + 1;
-	}
-			
-	printf("Kullanici adi: "); 
-	gets(Oyuncu.isim);
-			
-	fseek(pdosya, (Oyuncu.oyuncuNumarasi - 1)*sizeof(Oyuncu), SEEK_SET);
-			
-	if(fwrite(&Oyuncu, sizeof(Oyuncu), 1, pdosya)!= 1)
-	{
-		printf("Yazma Hatasi\n"); 
-		exit(1);
-	}
-			
-	rewind(pdosya);
-							
-	fclose(pdosya); 	
+	printf("Pac-Man'i yukari hareket ettir: w \n\n");
+	printf("Pac-Man'i asagi hareket ettir: s \n\n");
+	printf("Pac-Man'i sola hareket ettir: a \n\n");
+	printf("Pac-Man'i saga hareket ettir: d \n\n");
+	printf("Oyun sirasinda ana menuye don: q \n\n");
+	printf("Oyunu durdur/devam ettir: p \n\n");
+	
+	printf("*********************************************************");	
 }
 
 
-void liderlikTablosuYazdir(){
+void karakterleriOyunIcinHazirla(){
 	
-	if((pdosya=fopen("OyuncuBilgi.txt", "ab+")) == NULL)
+		PacMan.pacMan.sutunIndeks = 15;
+		PacMan.pacMan.satirIndeks = 17;
+		PacMan.pacMan.satirYonundekiHareket = 0;
+		PacMan.pacMan.sutunYonundekiHareket = 0;
+	
+		Canavar.canavar.sutunIndeks = 1;
+		Canavar.canavar.satirIndeks = 1;	
+}
+
+
+void skorTablosunaKayitEkle(oyuncuBilgileri *oyuncuVerileri){
+	
+	printf("Kullanici adi: "); 
+	scanf(" %s", oyuncuVerileri->isim);
+	
+	if((pDosya = fopen("OyuncuBilgi.txt", "a+")) == NULL)
+	{
+		printf("dosya acilamadi...\n"); 
+		exit(1);
+	}
+		
+	if(fwrite(oyuncuVerileri, sizeof(bilgiler), 1, pDosya) != 1) {
+		
+		printf("Yazma hatasi...");
+		getch();
+		exit(1);
+	}
+					
+	fclose(pDosya);		
+}
+
+
+void skorTablosunuYazdir(oyuncuBilgileri *oyuncuVerileri){
+	
+	if((pDosya=fopen("OyuncuBilgi.txt", "a+")) == NULL)
 	{
 		printf("dosya acilamadi...\n"); 
 		exit(1);
 	}
 			
-	while(fread(&oyuncuOkuma, sizeof(oyuncuOkuma), 1, pdosya))
+	while(fread(oyuncuVerileri, sizeof(bilgiler), 1, pDosya))
 	{
-		printf("Kullanici adi: %s\t", oyuncuOkuma.isim);
-		printf("Skoru: %d\n", oyuncuOkuma.skor);
-		printf("\n");
+		printf("\nOyuncu: %s    | \t", oyuncuVerileri->isim);
+		printf("Skoru: %d\n\n", oyuncuVerileri->skor);
+		printf("-----------------------------------------\n");
 	}
 }
 
@@ -286,7 +316,7 @@ void haritaTemizle() {
 }
 	
 	
-void haritaOlustur() {
+void haritaOlustur(oyuncuBilgileri *oyuncuVerileri) {
 	
 	usleep(100000);
 	
@@ -302,11 +332,11 @@ void haritaOlustur() {
 		printf("\n");
 	}	
 	
-	printf("Skor: %d\n", Oyuncu.skor);
+	printf("Skor: %d\n", oyuncuVerileri->skor);
 }
 
 
-void gameOverYaz(){
+void gameOverYaz(oyuncuBilgileri *oyuncuVerileri){
 	
 	ekraniTemizle();
 	
@@ -316,7 +346,7 @@ void gameOverYaz(){
 	
 	printf("*********************************************************\n\n");
 	
-	printf("Skorunuz: %d \n\n", Oyuncu.skor);
+	printf("Skorunuz: %d \n\n", oyuncuVerileri->skor);
 }
 
 
@@ -412,33 +442,33 @@ int canavarHareketEt() {
 		
 	int sutunKontrol, satirKontrol;
 		
-		sutunKontrol = Canavar.canavar.sutunIndeks + Canavar.canavar.sutunYonundekiHareket;
-		satirKontrol = Canavar.canavar.satirIndeks + Canavar.canavar.satirYonundekiHareket;
+	sutunKontrol = Canavar.canavar.sutunIndeks + Canavar.canavar.sutunYonundekiHareket;
+	satirKontrol = Canavar.canavar.satirIndeks + Canavar.canavar.satirYonundekiHareket;
 				
-		if(!canavarYonKontrol(sutunKontrol, satirKontrol)) {
+	if(!canavarYonKontrol(sutunKontrol, satirKontrol)) {
 		
-			Canavar.canavar.sutunYonundekiHareket = 0;
-			Canavar.canavar.satirYonundekiHareket = 0;		
+		Canavar.canavar.sutunYonundekiHareket = 0;
+		Canavar.canavar.satirYonundekiHareket = 0;		
 				
-		} else if(harita[satirKontrol][sutunKontrol] == '@') {
+	} else if(harita[satirKontrol][sutunKontrol] == '@') {
 			
-			return 0;
+		return 0;
 		
-		} else {
+	} else {
 				
-    		harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] = YolUzerindekiKarakter;	
+    	harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] = YolUzerindekiKarakter;	
 			
-			YolUzerindekiKarakter = harita[satirKontrol][sutunKontrol];
+		YolUzerindekiKarakter = harita[satirKontrol][sutunKontrol];
 			
-			Canavar.canavar.sutunIndeks += Canavar.canavar.sutunYonundekiHareket;
-			Canavar.canavar.satirIndeks += Canavar.canavar.satirYonundekiHareket;
+		Canavar.canavar.sutunIndeks += Canavar.canavar.sutunYonundekiHareket;
+		Canavar.canavar.satirIndeks += Canavar.canavar.satirYonundekiHareket;
 		
-			harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] ='&';	
-		}
+		harita[Canavar.canavar.satirIndeks][Canavar.canavar.sutunIndeks] ='&';	
+	}
 }
 
 
-void pacManHareketInput() {
+int InputaGoreIslemYap() {
 
 	if(kbhit()){
 
@@ -447,28 +477,65 @@ void pacManHareketInput() {
 			case 'w':
 				PacMan.pacMan.sutunYonundekiHareket = 0;
 				PacMan.pacMan.satirYonundekiHareket = -1;
-		  		break;
+				return 0;
+		  		
+		  	case 'W':
+				PacMan.pacMan.sutunYonundekiHareket = 0;
+				PacMan.pacMan.satirYonundekiHareket = -1;
+				return 0;
 
 		  	case 's':
 				PacMan.pacMan.sutunYonundekiHareket = 0;
 				PacMan.pacMan.satirYonundekiHareket = +1;
-		  		break;
+				return 0;
+		  		
+		  	case 'S':
+				PacMan.pacMan.sutunYonundekiHareket = 0;
+				PacMan.pacMan.satirYonundekiHareket = -1;
+				return 0;
 
 		  	case 'a':
 				PacMan.pacMan.sutunYonundekiHareket = -1;
 				PacMan.pacMan.satirYonundekiHareket = 0;
-		  		break;
+				return 0;
+		  		
+		  	case 'A':
+				PacMan.pacMan.sutunYonundekiHareket = -1;
+				PacMan.pacMan.satirYonundekiHareket = 0;
+				return 0;
 
 		  	case 'd':
 				PacMan.pacMan.sutunYonundekiHareket = +1;
 				PacMan.pacMan.satirYonundekiHareket = 0;
-		  		break;			  				  			
-		}
-	}		
-}	
+				return 0;	
+		  		
+		  	case 'D':
+				PacMan.pacMan.sutunYonundekiHareket = +1;
+				PacMan.pacMan.satirYonundekiHareket = 0;
+				return 0;
+				
+			case OyundanCikisYap:  
+				return 1;
+				
+			case OYUNDAN_CIKIS_YAP:  
+				return 1;
+				
+			case oyunuDurdur:
+				getch();
+				return 0;
+			
+			case OYUNU_DURDUR:
+				getch();
+				return 0;		
+		  		
+		  	default:
+				return 0;
+		}		
+	}	
+}
 
 
-int pacManHareketEt() {
+int pacManHareketEt(oyuncuBilgileri *oyuncuVerileri) {
 
 	int sutunKontrol, satirKontrol;
 
@@ -495,7 +562,7 @@ int pacManHareketEt() {
 		
 		if(harita[PacMan.pacMan.satirIndeks][PacMan.pacMan.sutunIndeks] == '+') {
 		
-			Oyuncu.skor++;
+			oyuncuVerileri->skor += 1;
 			yemKontrol = 0;				
 		}
 							
