@@ -106,6 +106,7 @@ typedef struct{
 
 oyuncuBilgileri bilgiler;
 
+
 int yemKontrol = 0;
 
 
@@ -128,7 +129,7 @@ void gameOverYaz(oyuncuBilgileri *oyuncuVerileri);
 
 
 int main() {
-
+	
 	while(1) {	
 	
 		oyuncuBilgileri *oyuncu = NULL;
@@ -228,7 +229,7 @@ void anaMenuOlustur() {
 	printf("PacMan v1 \n\n");
 	printf("Oyuna baslamak icin e tusuna bas \n\n");
 	printf("Kontrolleri goruntulemek icin k tusuna bas \n\n");
-	printf("Liderlik tablosu icin w tusuna bas\n\n");
+	printf("Skor tablosu icin w tusuna bas\n\n");
 	printf("Oyundan cikmak icin q tusuna bas\n\n");
 	
 	printf("*********************************************************");
@@ -258,24 +259,25 @@ void karakterleriOyunIcinHazirla(){
 		PacMan.pacMan.sutunYonundekiHareket = 0;
 	
 		Canavar.canavar.sutunIndeks = 1;
-		Canavar.canavar.satirIndeks = 1;	
+		Canavar.canavar.satirIndeks = 1;
+		Canavar.enKisaMesafe = 2000;	
 }
 
 
 void skorTablosunaKayitEkle(oyuncuBilgileri *oyuncuVerileri){
 	
-	printf("Kullanici adi: "); 
+	printf("Oyuncu: "); 
 	scanf(" %s", oyuncuVerileri->isim);
 	
 	if((pDosya = fopen("OyuncuBilgi.txt", "a+")) == NULL)
 	{
-		printf("dosya acilamadi...\n"); 
+		printf("Dosya Acilamadi !\n"); 
 		exit(1);
 	}
 		
 	if(fwrite(oyuncuVerileri, sizeof(bilgiler), 1, pDosya) != 1) {
 		
-		printf("Yazma hatasi...");
+		printf("Dosya Veri Ekleme Hatasi !");
 		getch();
 		exit(1);
 	}
@@ -288,11 +290,11 @@ void skorTablosunuYazdir(oyuncuBilgileri *oyuncuVerileri){
 	
 	if((pDosya=fopen("OyuncuBilgi.txt", "a+")) == NULL)
 	{
-		printf("dosya acilamadi...\n"); 
+		printf("Dosya Acilamadi !\n"); 
 		exit(1);
 	}
 			
-	while(fread(oyuncuVerileri, sizeof(bilgiler), 1, pDosya))
+	while(fread(oyuncuVerileri, sizeof(bilgiler), 1, pDosya) != 0)
 	{
 		printf("\nOyuncu: %s    | \t", oyuncuVerileri->isim);
 		printf("Skoru: %d\n\n", oyuncuVerileri->skor);
@@ -369,12 +371,8 @@ int canavarPacManArasiMesafeHesap(int canavarSutunIndeks, int canavarSatirIndeks
 	if(Mesafe < Canavar.enKisaMesafe) {
 		
 		Canavar.enKisaMesafe = Mesafe;	
-		Canavar.tempYon = Canavar.Yon;
-	
-	} else if(Mesafe == Canavar.enKisaMesafe){
-		
-		return 0;
-	}
+		Canavar.tempYon = Canavar.Yon;	
+	} 
 }
 
 
@@ -405,7 +403,7 @@ void canavarYonBelirle(){
 	}	
 	
 	Canavar.canavar.yon = Canavar.tempYon;
-	Canavar.enKisaMesafe = 1000;	
+	Canavar.enKisaMesafe = 2000;	
 }
 
 
@@ -491,7 +489,7 @@ int InputaGoreIslemYap() {
 		  		
 		  	case 'S':
 				PacMan.pacMan.sutunYonundekiHareket = 0;
-				PacMan.pacMan.satirYonundekiHareket = -1;
+				PacMan.pacMan.satirYonundekiHareket = +1;
 				return 0;
 
 		  	case 'a':
